@@ -5,20 +5,22 @@ import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.SecondaryDatabase;
 import java.io.IOException;
 
+import java.lang.Long;
+
 public class SizeKeyCreator implements SecondaryKeyCreator {
 
     private TupleBinding theBinding;
 
-    public FullNameKeyCreator(TupleBinding theBinding1) {
+    public SizeKeyCreator(TupleBinding theBinding1) {
         theBinding = theBinding1;
     }
+
     public boolean createSecondaryKey(SecondaryDatabase secDb,
             DatabaseEntry keyEntry,
             DatabaseEntry dataEntry,
             DatabaseEntry resultEntry) {
-    try {
-        // TODO
-    } catch (IOException willNeverOccur) {}
-        return true;
+        XMLFile xml = (XMLFile) theBinding.entryToObject(dataEntry);
+        resultEntry.setData(xml.getSizeByteArray());
+        return false;
     }
 }

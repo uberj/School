@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.ByteBuffer;
 
 public class XMLFile {
 
@@ -6,16 +7,30 @@ public class XMLFile {
     public long size;
     public String content;
 
+    public XMLFile () {
+    }
+
     public XMLFile (File f) {
         name = f.getPath();
-	size = f.length();
-	content = FileData.getFileData(f);
+        size = f.length();
+        content = FileData.getFileData(f);
     }
 
     public XMLFile (String name, long size, String content) {
-        name = name;
-        size = size;
-        content = content;
+        this.name = name;
+        this.size = size;
+        this.content = content;
+    }
+
+    public byte[] getSizeByteArray() {
+        byte b[] = new byte[8];
+        ByteBuffer buf = ByteBuffer.wrap(b);
+        buf.putLong(this.size);
+        return b;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public String toString() {

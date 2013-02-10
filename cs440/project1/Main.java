@@ -20,11 +20,9 @@ public class Main {
         // create xml file object
         XMLFile xml = new XMLFile("asdf", 123, "asdfdf");
 
-        // create db entry
-        DatabaseEntry key = new DatabaseEntry(xml.name.getBytes());
-        DatabaseEntry data = new DatabaseEntry();
 
-        DatabaseEntry key = new DatabaseEntry(xml.size.getBytes());
+        // create db entry
+        DatabaseEntry key = new DatabaseEntry(xml.getName().getBytes());
         DatabaseEntry data = new DatabaseEntry();
 
         // bind stuff
@@ -35,10 +33,8 @@ public class Main {
             DatabaseEntry new_data = new DatabaseEntry();
             db.getDB().get(null, key, new_data, null);
             XMLFile newxml = (XMLFile) binding.entryToObject(new_data);
-            newxml.print();
         } catch (DatabaseException e) {
         }
-        
     }
 
 }
