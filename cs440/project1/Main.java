@@ -3,6 +3,10 @@ import java.util.ArrayList;
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.DatabaseEntry;
 import java.io.FileNotFoundException;
+import com.sleepycat.db.LockMode;
+import com.sleepycat.db.OperationStatus;
+import com.sleepycat.db.SecondaryCursor;
+
 
 public class Main {
 
@@ -27,7 +31,6 @@ public class Main {
         // create db entry
         DatabaseEntry key = new DatabaseEntry(xml.getName().getBytes());
         DatabaseEntry data = new DatabaseEntry();
-
         // bind stuff
         binding.objectToEntry(xml, data);
 
@@ -39,6 +42,18 @@ public class Main {
             XMLFile newxml = (XMLFile) binding.entryToObject(new_data);
         } catch (DatabaseException e) {
             System.err.println("Caught DatabaseException during creation: ");
+            e.printStackTrace();
+        }
+        SecondaryCursor secCursor = null;
+        try {
+            DatabaseEntry foundKey = new DatabaseEntry();
+            DatabaseEntry foundData = new DatabaseEntry();
+            DatabaseEntry sizeKey = new DatabaseEntry(xml.getSizeByteArray());
+            secCursor = dbs.getSecDb().openSecondaryCursor(null, null);
+            OperationStatus ret = secCursor.getSearchKey(sizeKey, foundKey, foundData, LockMode.DEFAULT);
+            XMLFile newxml2 = (XMLFile) binding.entryToObject(foundData);
+        } catch (DatabaseException e) {
+            System.err.println("God hates us all: " + e.toString());
             e.printStackTrace();
         }
     }
