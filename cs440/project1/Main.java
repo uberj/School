@@ -6,6 +6,10 @@ import java.io.FileNotFoundException;
 public class Main {
 
     public static void main(String[] args) {
+        simpleTest();
+    }
+
+    public static void simpleTest() {
         BaseDatabase db = new BaseDatabase();
         try {
             db.setup("imdb");
