@@ -46,8 +46,8 @@ public class Dbs {
         }
 
         try {
-            //secName = dbNames + "/" + secName;
-            sizeDb = new SecondaryDatabase(null, "secondary", imdb, secDbConfig);
+            secName = dbNames + "/" + secName;
+            sizeDb = new SecondaryDatabase(null, secName, imdb, secDbConfig);
         } catch(FileNotFoundException e) {
             System.err.println(" Error in Secondary creation : " + e.toString());
             e.printStackTrace();

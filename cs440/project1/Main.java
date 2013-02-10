@@ -5,14 +5,42 @@ import com.sleepycat.db.DatabaseEntry;
 import java.io.FileNotFoundException;
 
 public class Main {
-    public static void main(String[] args) {
+
+    public static void simpleTest2() {
         Dbs dbs = new Dbs();
         String dbName = "imdb";
 
         File rootPath = new File("/scratch/cs440/imdb");
         ArrayList<File> paths = new ArrayList<File>();
         paths = FileData.walkPath(rootPath);
-        simpleTest();
+        try {
+            dbs.setup("imdb");
+       } catch (DatabaseException e){
+           System.err.println("Caught Exception creating datatbase :");
+           e.printStackTrace();
+       }
+        XMLFileBinding binding = new XMLFileBinding();
+
+        // create xml file object
+        XMLFile xml = new XMLFile("asdf", 123, "asdfdf");
+
+        // create db entry
+        DatabaseEntry key = new DatabaseEntry(xml.getName().getBytes());
+        DatabaseEntry data = new DatabaseEntry();
+
+        // bind stuff
+        binding.objectToEntry(xml, data);
+
+        try {
+            dbs.getDB().put(null, key, data);
+            DatabaseEntry new_data = new DatabaseEntry();
+            dbs.getDB().get(null, key, new_data, null);
+
+            XMLFile newxml = (XMLFile) binding.entryToObject(new_data);
+        } catch (DatabaseException e) {
+            System.err.println("Caught DatabaseException during creation: ");
+            e.printStackTrace();
+        }
     }
 
     public static void simpleTest() {
@@ -46,6 +74,10 @@ public class Main {
             System.err.println("Caught DatabaseException during creation: ");
             e.printStackTrace();
         }
+    }
+    public static void main(String[] args) {
+        simpleTest();
+        simpleTest2();
     }
 
 }
