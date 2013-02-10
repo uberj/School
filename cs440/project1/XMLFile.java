@@ -11,7 +11,7 @@ public class XMLFile {
     }
 
     public XMLFile (File f) {
-        name = f.getPath();
+        name = f.geName();
         size = f.length();
         content = FileData.getFileData(f);
     }
