@@ -13,7 +13,6 @@ public class XMLFileBinding extends TupleBinding {
     }
 
     public Object entryToObject(TupleInput ti) {
-
         String name = ti.readString();
         long size = ti.readLong();
         String content = ti.readString();
