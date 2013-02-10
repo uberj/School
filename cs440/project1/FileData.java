@@ -39,14 +39,4 @@ public class FileData {
 		}
 		return foundPaths;
 	}
-	/*
-	public static void main(String[] args) {
-		File f = new File("/scratch/cs440/imdb");
-		ArrayList<File> paths = new ArrayList<File>();
-		paths = walkPath(f);
-		for(File path:paths) {
-			System.out.println(path);
-		}
-	}
-	*/
 }
