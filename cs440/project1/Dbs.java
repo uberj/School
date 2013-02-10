@@ -18,6 +18,8 @@ public class Dbs {
     public Dbs() {}
 
     public void setup(String dbNames) throws DatabaseException {
+        dbBind = new XMLFileBinding();
+        secKey = new SizeKeyCreator(dbBind);
         DatabaseConfig dbConfig = new DatabaseConfig();
         SecondaryConfig  secDbConfig = new SecondaryConfig();
         dbConfig.setErrorStream(System.err);
@@ -27,7 +29,10 @@ public class Dbs {
 
         secDbConfig.setErrorStream(System.err);
         secDbConfig.setErrorPrefix("Secondary");
+        secDbConfig.setKeyCreator(secKey);
         secDbConfig.setType(DatabaseType.BTREE);
+        secDbConfig.setSortedDuplicates(true);
+        secDbConfig.setAllowPopulate(true); 
         secDbConfig.setAllowCreate(true);
 
         try {
@@ -39,11 +44,10 @@ public class Dbs {
             notFound.printStackTrace();
             System.exit(-1);
         }
-        dbBind = new XMLFileBinding();
-        secKey = new SizeKeyCreator(dbBind);
+
         try {
-            secName = dbNames + "/" + secName;
-            sizeDb = new SecondaryDatabase(secName, null, this.imdb, secDbConfig);
+            //secName = dbNames + "/" + secName;
+            sizeDb = new SecondaryDatabase(null, "secondary", imdb, secDbConfig);
         } catch(FileNotFoundException e) {
             System.err.println(" Error in Secondary creation : " + e.toString());
             e.printStackTrace();

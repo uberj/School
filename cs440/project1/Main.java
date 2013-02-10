@@ -5,9 +5,13 @@ import com.sleepycat.db.DatabaseEntry;
 import java.io.FileNotFoundException;
 
 public class Main {
-    public static void main(String[] args) throws DatabaseException{
-        //Dbs myDbs = new Dbs();
-        //String dbName = "imdb";
+    public static void main(String[] args) {
+        Dbs dbs = new Dbs();
+        String dbName = "imdb";
+
+        File rootPath = new File("/scratch/cs440/imdb");
+        ArrayList<File> paths = new ArrayList<File>();
+        paths = FileData.walkPath(rootPath);
         simpleTest();
     }
 
