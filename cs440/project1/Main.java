@@ -9,14 +9,47 @@ import com.sleepycat.db.SecondaryCursor;
 
 
 public class Main {
-
-    public static void simpleTest2() {
+    public static void simpleTest3() {
         Dbs dbs = new Dbs();
         String dbName = "imdb";
 
         File rootPath = new File("/scratch/cs440/imdb");
         ArrayList<File> paths = new ArrayList<File>();
         paths = FileData.walkPath(rootPath);
+        try {
+            dbs.setup("imdb");
+        } catch (DatabaseException e){
+            System.err.println("Caught Exception creating datatbase :");
+            e.printStackTrace();
+        }
+        XMLFile xml = null;
+
+        // create db entry
+        DatabaseEntry key = null;
+        DatabaseEntry data = null;
+        XMLFile found = null;
+        XMLFileBinding binding = new XMLFileBinding();
+
+        for(File path:paths) {
+            try {
+                xml = new XMLFile(path);
+                key = new DatabaseEntry(xml.getName().getBytes());
+                data = new DatabaseEntry();
+                binding.objectToEntry(xml, data);
+                dbs.getDB().put(null, key, data);
+                dbs.getDB().get(null, key, data, null);
+                found = (XMLFile) binding.entryToObject(data);
+            } catch (DatabaseException e) {
+                System.err.println("Caught DatabaseException during creation: ");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void simpleTest2() {
+        Dbs dbs = new Dbs();
+        String dbName = "imdb";
+
         try {
             dbs.setup("imdb");
        } catch (DatabaseException e){
@@ -93,6 +126,7 @@ public class Main {
     public static void main(String[] args) {
         simpleTest();
         simpleTest2();
+        simpleTest3();
     }
 
 }
