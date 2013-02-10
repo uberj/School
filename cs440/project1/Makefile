@@ -11,7 +11,7 @@ JC = javac
 CLASSES = Main.java \
 		XMLFile.java \
 		XMLFileBinding.java \
-		BaseDatabase.java \
+		Dbs.java \
 		SizeKeyCreator.java
 
 all: classes
