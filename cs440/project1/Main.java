@@ -14,7 +14,7 @@ public class Main {
     public static void simpleTest() {
         BaseDatabase db = new BaseDatabase();
         try {
-            dbs.setup("imdb");
+            db.setup("imdb");
         } catch (DatabaseException e) {
             System.err.println("Caught DatabaseException during setup: ");
             e.printStackTrace();
@@ -33,9 +33,9 @@ public class Main {
         binding.objectToEntry(xml, data);
 
         try {
-            dbs.getDB().put(null, key, data);
+            db.getDB().put(null, key, data);
             DatabaseEntry new_data = new DatabaseEntry();
-            dbs.getDB().get(null, key, new_data, null);
+            db.getDB().get(null, key, new_data, null);
 
             XMLFile newxml = (XMLFile) binding.entryToObject(new_data);
         } catch (DatabaseException e) {
