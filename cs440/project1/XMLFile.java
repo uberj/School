@@ -9,7 +9,7 @@ public class XMLFile {
     public XMLFile (File f) {
         name = f.getPath();
 	size = f.length();
-	content = getFileData(f);
+	content = FileData.getFileData(f);
     }
 
     public XMLFile (String name, long size, String content) {

@@ -2,16 +2,24 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.File;
 import java.util.ArrayList; 
-import java.util.Scanner;
+import java.io.FileReader;
+import java.io.BufferedReader;
+
 public class FileData {
 
 	public static String getFileData(File f) {
+		String line = null;
+		String content = "";
 		try {
-			String contents = new Scanner(f, "UTF-8").useDelimiter("\\A").next();
-			return contents;
-		} catch (FileNotFoundException e) {
+			BufferedReader br = new BufferedReader(new FileReader(f));
+			while ((line = br.readLine()) != null) {
+				content += line;
+			}
+			br.close();
+		} catch (IOException e) {
 			e.printStackTrace();
-			return "";
+		} finally {
+			return content;
 		}
 	}
 
@@ -31,7 +39,7 @@ public class FileData {
 		}
 		return foundPaths;
 	}
-
+	/*
 	public static void main(String[] args) {
 		File f = new File("/scratch/cs440/imdb");
 		ArrayList<File> paths = new ArrayList<File>();
@@ -40,4 +48,5 @@ public class FileData {
 			System.out.println(path);
 		}
 	}
+	*/
 }
