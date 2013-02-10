@@ -2,6 +2,8 @@ import com.sleepycat.db.Database;
 import com.sleepycat.db.DatabaseConfig;
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.DatabaseType;
+import com.sleepycat.db.SecondaryDatabase;
+import com.sleepycat.db.SecondaryConfig;
 
 import java.io.FileNotFoundException;
 
@@ -31,6 +33,20 @@ public class BaseDatabase {
             System.exit(-1);
         }
     }
+
+	public void createSecondary(String secName) { 
+
+		SecondaryConfig secConfig = new SecondaryConfig();
+		secConfig.setAllowCreate(true);
+		secConfig.setType(DatabaseType.BTREE);
+		secConfig.setSortedDuplicates(true);
+	
+		SizeKeyCreator secKey = new SizeKeyCreator();
+		secConfig.setKeyCreator(secKey);
+		
+		SecondaryDatabase sizeDB = new SecondaryDatabase(secName, null, imdb, secConfig)
+	}
+
 
     public Database getDB() {
         return imdb;
