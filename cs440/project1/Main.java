@@ -5,20 +5,22 @@ import com.sleepycat.db.DatabaseEntry;
 import java.io.FileNotFoundException;
 
 public class Main {
+    public static void main(String[] args) throws DatabaseException{
+        //Dbs myDbs = new Dbs();
+        String dbName = "imdb";
 
-    public static void main(String[] args) {
+        //File rootPath = new File("/scratch/cs440/imdb");
+        //ArrayList<File> paths = new ArrayList<File>();
+        //paths = FileData.walkPath(rootPath);
 
-        File rootPath = new File("/scratch/cs440/imdb");
-        ArrayList<File> paths = new ArrayList<File>();
-        paths = FileData.walkPath(rootPath);
-        BaseDatabase db = new BaseDatabase();
+        //myDbs.setup(dbName);
+        /*
         try {
-            db.setup("imdb");
+            dbs.setup("imdb");
         } catch (DatabaseException e) {
             System.err.println("Caught DatabaseException during setup: ");
             e.printStackTrace();
         }
-
         // create binding
         XMLFileBinding binding = new XMLFileBinding();
 
@@ -33,15 +35,16 @@ public class Main {
         binding.objectToEntry(xml, data);
 
         try {
-            db.getDB().put(null, key, data);
+            dbs.getDB().put(null, key, data);
             DatabaseEntry new_data = new DatabaseEntry();
-            db.getDB().get(null, key, new_data, null);
+            dbs.getDB().get(null, key, new_data, null);
 
             XMLFile newxml = (XMLFile) binding.entryToObject(new_data);
         } catch (DatabaseException e) {
             System.err.println("Caught DatabaseException during creation: ");
             e.printStackTrace();
         }
+        */
     }
 
 }
