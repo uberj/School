@@ -65,8 +65,8 @@ public class Dbs {
     public void close() {
 
         try {
-			if (sizeDB != null) { 
-				sizeDB.close();
+			if (sizeDb != null) { 
+				sizeDb.close();
 			}	
             if (imdb != null) {
                 imdb.close();
