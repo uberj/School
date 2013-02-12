@@ -24,6 +24,7 @@ public class Main {
         return b;
     }
 
+
     public static void populateDB() {
         File rootPath = new File("/scratch/cs440/imdb");
         ArrayList<File> paths = new ArrayList<File>();
