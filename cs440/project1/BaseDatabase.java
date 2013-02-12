@@ -32,7 +32,7 @@ public class BaseDatabase {
         }
     }
 
-    public Database getDB() {
+    public Database getDb() {
         return imdb;
     }
 
