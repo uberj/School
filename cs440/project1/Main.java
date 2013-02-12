@@ -1,9 +1,10 @@
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+
+import com.sleepycat.db.Cursor;
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.DatabaseEntry;
-import java.io.FileNotFoundException;
-import java.nio.ByteBuffer;
 import com.sleepycat.db.LockMode;
 import com.sleepycat.db.OperationStatus;
 import com.sleepycat.db.SecondaryCursor;
@@ -12,6 +13,10 @@ import com.sleepycat.db.SecondaryCursor;
 public class Main {
     // Fi
     //
+    public static String dbName = "imdb";
+    public static XMLFileBinding binding = new XMLFileBinding();
+    public static Dbs dbs = new Dbs();
+
     public static byte[] getSizeByteArray(long sizeKey) {
         byte b[] = new byte[8];
         ByteBuffer buf = ByteBuffer.wrap(b);
@@ -20,9 +25,6 @@ public class Main {
     }
 
     public static void populateDB() {
-        Dbs dbs = new Dbs();
-        String dbName = "imdb";
-
         File rootPath = new File("/scratch/cs440/imdb");
         ArrayList<File> paths = new ArrayList<File>();
         paths = FileData.walkPath(rootPath);
@@ -34,11 +36,9 @@ public class Main {
         }
         XMLFile xml = null;
 
-        // create db entry
         DatabaseEntry key = null;
         DatabaseEntry data = null;
         XMLFile found = null;
-        XMLFileBinding binding = new XMLFileBinding();
 
         for(File path:paths) {
             try {
@@ -54,17 +54,12 @@ public class Main {
         }
     }
 
-    //public static ArrayList<XMLFile> imdbRangeQuery(String firstFileName, String lastFileName) {}
-
-    //public static ArrayList<XMLFile> imdbRangeQuery(long firstFileSize, long lastFileSize) {}
 
     public static ArrayList<XMLFile> imdbPointQuery(long fileSize) {
         ArrayList<XMLFile> foundEntries = new ArrayList<XMLFile>();
-        Dbs dbs = new Dbs();
-        String dbName = "imdb";
         byte sizeKeyb[] = getSizeByteArray(fileSize);
         try {
-            dbs.setup("imdb");
+            dbs.setup(dbName);
        } catch (DatabaseException e){
            System.err.println("Caught Exception creating datatbase :");
            e.printStackTrace();
@@ -81,22 +76,44 @@ public class Main {
                 foundEntries.add((XMLFile) binding.entryToObject(foundData));
             }
         } catch (DatabaseException e) {
-            System.err.println("God hates us all: " + e.toString());
+            System.err.println("Database Error: " + e.toString());
             e.printStackTrace();
         }
         return foundEntries;
     }
 
-    //public static ArrayList<XMLFile> imdbPointQuery(String fileName) {}
+
+    public static ArrayList<XMLFile> imdbPointQuery(String fileName) {
+        ArrayList<XMLFile> foundEntries = new ArrayList<XMLFile>();
+        try {
+            dbs.setup(dbName);
+       } catch (DatabaseException e){
+           System.err.println("Caught Exception creating datatbase :");
+           e.printStackTrace();
+       }
+        XMLFileBinding binding = new XMLFileBinding();
+        Cursor cursor = null;
+        try {
+            DatabaseEntry foundKey = new DatabaseEntry();
+            DatabaseEntry foundData = new DatabaseEntry();
+            DatabaseEntry nameKey = new DatabaseEntry(fileName.getBytes());
+
+            cursor = dbs.getSecDb().openCursor(null, null);
+            while (cursor.getNext(nameKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+                foundEntries.add((XMLFile) binding.entryToObject(foundData));
+            }
+        } catch (DatabaseException e) {
+            System.err.println("Database Error: " + e.toString());
+            e.printStackTrace();
+        }
+        return foundEntries;
+    }
 
 
     public static void simpleTest2() {
 
-        Dbs dbs = new Dbs();
-        String dbName = "imdb";
-
         try {
-            dbs.setup("imdb");
+            dbs.setup(dbName);
        } catch (DatabaseException e){
            System.err.println("Caught Exception creating datatbase :");
            e.printStackTrace();
@@ -131,15 +148,16 @@ public class Main {
             OperationStatus ret = secCursor.getSearchKey(sizeKey, foundKey, foundData, LockMode.DEFAULT);
             XMLFile newxml2 = (XMLFile) binding.entryToObject(foundData);
         } catch (DatabaseException e) {
-            System.err.println("God hates us all: " + e.toString());
+            System.err.println("Database Error: " + e.toString());
             e.printStackTrace();
         }
     }
 
+
     public static void simpleTest() {
         BaseDatabase db = new BaseDatabase();
         try {
-            db.setup("imdb");
+            db.setup(dbName);
         } catch (DatabaseException e) {
             System.err.println("Caught DatabaseException during setup: ");
             e.printStackTrace();
@@ -168,9 +186,10 @@ public class Main {
             e.printStackTrace();
         }
     }
+
+
     public static void main(String[] args) {
         simpleTest();
         simpleTest2();
     }
-
 }
