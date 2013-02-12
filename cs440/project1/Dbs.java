@@ -63,7 +63,11 @@ public class Dbs {
     }
 
     public void close() {
+
         try {
+			if (sizeDB != null) { 
+				sizeDB.close();
+			}	
             if (imdb != null) {
                 imdb.close();
             }
