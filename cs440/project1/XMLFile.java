@@ -32,6 +32,10 @@ public class XMLFile {
     public String getName() {
         return this.name;
     }
+	
+	public long getSize() { 
+		return this.size;
+	}
 
     public String toString() {
            return  "<XMLFile: " + this.name + "/>\n " + "< XMLFileSize: " + this.size + "/>\n" + 
