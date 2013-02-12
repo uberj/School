@@ -47,12 +47,13 @@ public class Main {
                 key = new DatabaseEntry(xml.getName().getBytes());
                 data = new DatabaseEntry();
                 binding.objectToEntry(xml, data);
-                dbs.getDB().put(null, key, data);
+                dbs.getDb().put(null, key, data);
             } catch (DatabaseException e) {
                 System.err.println("Caught DatabaseException during creation: ");
                 e.printStackTrace();
             }
         }
+		dbs.close();
     }
 
 
@@ -80,6 +81,7 @@ public class Main {
             System.err.println("Database Error: " + e.toString());
             e.printStackTrace();
         }
+		dbs.close();
         return foundEntries;
     }
 
@@ -99,7 +101,7 @@ public class Main {
             DatabaseEntry foundData = new DatabaseEntry();
             DatabaseEntry nameKey = new DatabaseEntry(fileName.getBytes());
 
-            cursor = dbs.getSecDb().openCursor(null, null);
+            cursor = dbs.getDb().openCursor(null, null);
             while (cursor.getNext(nameKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
                 foundEntries.add((XMLFile) binding.entryToObject(foundData));
             }
@@ -107,9 +109,26 @@ public class Main {
             System.err.println("Database Error: " + e.toString());
             e.printStackTrace();
         }
+		dbs.close();
         return foundEntries;
     }
+/*
+	public static ArrayList<XMLFile> imdbRangeQuery(String fileName) { 
+		ArrayList<XMLFile> foundEntries = new ArrayList<XMLFile>();
+		try { 
+			dbs.setup(dbName);
+		} catch (DatabaseException e) { 
+			System.err.println("Caught Exception creating database :");
+			e.printStackTrace();
+		}	
+		XMLFileBinding binding = new XMLFileBinding();
+		Cursor cursor = null;
+		
 
+		
+
+	}
+*/	
 
     public static void simpleTest2() {
 
@@ -131,9 +150,9 @@ public class Main {
         binding.objectToEntry(xml, data);
 
         try {
-            dbs.getDB().put(null, key, data);
+            dbs.getDb().put(null, key, data);
             DatabaseEntry new_data = new DatabaseEntry();
-            dbs.getDB().get(null, key, new_data, null);
+            dbs.getDb().get(null, key, new_data, null);
 
             XMLFile newxml = (XMLFile) binding.entryToObject(new_data);
         } catch (DatabaseException e) {
@@ -177,9 +196,9 @@ public class Main {
         binding.objectToEntry(xml, data);
 
         try {
-            db.getDB().put(null, key, data);
+            db.getDb().put(null, key, data);
             DatabaseEntry new_data = new DatabaseEntry();
-            db.getDB().get(null, key, new_data, null);
+            db.getDb().get(null, key, new_data, null);
 
             XMLFile newxml = (XMLFile) binding.entryToObject(new_data);
         } catch (DatabaseException e) {
@@ -192,5 +211,38 @@ public class Main {
     public static void main(String[] args) {
         simpleTest();
         simpleTest2();
+
+		if(args.length < 1) { 
+			System.out.println("Insufficient args. . ERROR!");
+			System.exit(1);
+		}	
+		switch(Integer.parseInt(args[0])) { 
+
+		case 1: 
+			System.out.println("Populating database with XML files. . ."); 
+			populateDB();
+			break;
+		case 2:
+			System.out.println("Performing point query on file " + args[1]);
+			imdbPointQuery(args[1]); 		
+			break;
+		case 3:
+			System.out.println("Performing range query over files fom " + args[1] + " - " + args[2]);
+			// TODO: Add range query function 
+			break;
+		case 4:
+			System.out.println("Performing point query on file size " + args[1]);	
+			imdbPointQuery(args[1]);
+			break;
+		case 5:
+			System.out.println("Performing range query over file size from " + args[1] + " - " + args[2]);
+			// TODO: Add range query function
+			break;
+		case 6:
+			System.out.println("Performing range query over file name and size from files " + args[1] + " - " + args[2] + " and size " + args[3] + " - "  + args[4]);
+
+		default:
+			System.out.println("Invalid query type.");
+		}
     }
 }

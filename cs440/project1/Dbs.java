@@ -54,7 +54,7 @@ public class Dbs {
         }
     }
 
-    public Database getDB() {
+    public Database getDb() {
         return imdb;
     }
 
