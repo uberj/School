@@ -15,8 +15,11 @@ public class Main {
     public static String dbName = "imdb";
     public static XMLFileBinding binding = new XMLFileBinding();
     public static Dbs dbs = new Dbs();
-	public static OperationStatus ret = null; 
-    public static XMLFile xml = null;
+	public static OperationStatus ret; 
+    public static XMLFile xml;
+    public static Cursor cursor;
+    public static SecondaryCursor secCursor;
+
 
     public static byte[] getSizeByteArray(long sizeKey) {
         byte b[] = new byte[8];
@@ -38,7 +41,6 @@ public class Main {
         }
         DatabaseEntry key = null;
         DatabaseEntry data = null;
-        XMLFile found = null;
         try {
             for(File path:paths) {
                 xml = new XMLFile(path);
@@ -69,7 +71,6 @@ public class Main {
            e.printStackTrace();
        }
         XMLFileBinding binding = new XMLFileBinding();
-        SecondaryCursor secCursor = null;
         try {
             DatabaseEntry foundKey = new DatabaseEntry();
             DatabaseEntry foundData = new DatabaseEntry();
@@ -104,7 +105,6 @@ public class Main {
            e.printStackTrace();
        }
         XMLFileBinding binding = new XMLFileBinding();
-        Cursor cursor = null;
         try {
             DatabaseEntry foundData = new DatabaseEntry();
             DatabaseEntry nameKey = new DatabaseEntry(fileName.getBytes());
@@ -122,6 +122,7 @@ public class Main {
         return foundEntry;
     }
 
+
     public static ArrayList<XMLFile> imdbRangeQuery(String fileNameMin, String fileNameMax) {
 		ArrayList<XMLFile> foundEntries = new ArrayList<XMLFile>();
         long max = Long.valueOf(fileNameMax.replaceAll(".xml", ""));
@@ -135,7 +136,6 @@ public class Main {
 			e.printStackTrace();
 	    }
 		XMLFileBinding binding = new XMLFileBinding();
-		Cursor cursor = null;
         try {
             cursor = dbs.getDb().openCursor(null, null);
 	    	ret = cursor.getSearchKeyRange(nameKey, foundData, LockMode.DEFAULT);

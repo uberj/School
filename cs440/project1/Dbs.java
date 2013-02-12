@@ -26,6 +26,8 @@ public class Dbs {
         dbConfig.setErrorPrefix("Databases");
         dbConfig.setType(DatabaseType.BTREE);
         dbConfig.setAllowCreate(true);
+        dbConfig.setTransactional(false);
+        dbConfig.setCacheSize(10000);
 
         secDbConfig.setErrorStream(System.err);
         secDbConfig.setErrorPrefix("Secondary");
@@ -34,6 +36,9 @@ public class Dbs {
         secDbConfig.setSortedDuplicates(true);
         secDbConfig.setAllowPopulate(true); 
         secDbConfig.setAllowCreate(true);
+        secDbConfig.setTransactional(false);
+        secDbConfig.setCacheSize(10000);
+
 
         try {
             imdbName = dbNames + "/" + imdbName;
@@ -47,7 +52,7 @@ public class Dbs {
 
         try {
             secName = dbNames + "/" + secName;
-            sizeDb = new SecondaryDatabase(null, secName, imdb, secDbConfig);
+            sizeDb = new SecondaryDatabase(secName, secName, imdb, secDbConfig);
         } catch(FileNotFoundException e) {
             System.err.println(" Error in Secondary creation : " + e.toString());
             e.printStackTrace();
