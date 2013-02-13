@@ -11,18 +11,24 @@ import java.io.FileNotFoundException;
 public class Dbs {
 
     private Database imdb = null;
+    private String textName = "textDB";
     private String imdbName = "primary";
     private String secName = "secondary";
+    private SecondaryDatabase textdb = null;
     private SecondaryDatabase sizeDb = null;
     private XMLFileBinding dbBind = null;
     private SizeKeyCreator secKey = null;
+    private TextIndexKeyCreator textKey = null;
     public Dbs() {}
 
     public void setup(String dbNames) throws DatabaseException {
         dbBind = new XMLFileBinding();
         secKey = new SizeKeyCreator(dbBind);
+        textKey = new TextIndexKeyCreator(dbBind);
         DatabaseConfig dbConfig = new DatabaseConfig();
-        SecondaryConfig  secDbConfig = new SecondaryConfig();
+        SecondaryConfig secDbConfig = new SecondaryConfig();
+        SecondaryConfig textConfig = new SecondaryConfig();
+        
         dbConfig.setErrorStream(System.err);
         dbConfig.setErrorPrefix("Databases");
         dbConfig.setType(DatabaseType.BTREE);
@@ -35,17 +41,28 @@ public class Dbs {
         secDbConfig.setKeyCreator(secKey);
         secDbConfig.setType(DatabaseType.BTREE);
         secDbConfig.setSortedDuplicates(true);
-        secDbConfig.setAllowPopulate(true); 
+        secDbConfig.setAllowPopulate(true);
         secDbConfig.setAllowCreate(true);
         secDbConfig.setTransactional(false);
         secDbConfig.setCacheSize(10000);
+
+        textConfig.setErrorStream(System.err);
+        textConfig.setErrorPrefix("textIndex");
+        textConfig.setMultiKeyCreator(textKey);
+        textConfig.setSortedDuplicates(true);
+        textConfig.setType(DatabaseType.BTREE);
+        textConfig.setAllowPopulate(true);
+        textConfig.setAllowCreate(true);
+        textConfig.setTransactional(false);
+        textConfig.setCacheSize(10000);
+
 
         try {
             imdbName = dbNames + "/" + imdbName;
             System.out.println("Database at: " + imdbName);
             imdb = new Database(imdbName, null, dbConfig);
         } catch(FileNotFoundException notFound) {
-            System.err.println(" HI Databases: " + notFound.toString());
+            System.err.println("Error creating primary database: " + notFound.toString());
             notFound.printStackTrace();
             System.exit(-1);
         }
@@ -54,8 +71,19 @@ public class Dbs {
             secName = dbNames + "/" + secName;
             sizeDb = new SecondaryDatabase(secName, secName, imdb, secDbConfig);
         } catch(FileNotFoundException e) {
-            System.err.println(" Error in Secondary creation : " + e.toString());
+            System.err.println("Error creating FileSize database: " + e.toString());
             e.printStackTrace();
+            System.exit(-1);
+        }
+
+        try {
+            textName = dbNames + "/" + textName;
+            System.out.println("Database at: " + textName);
+            textdb = new SecondaryDatabase(textName, textName, imdb, textConfig);
+        } catch(FileNotFoundException notFound) {
+            System.err.println("Error in creating FullText database: " + notFound.toString());
+            notFound.printStackTrace();
+            System.exit(-1);
         }
     }
 
@@ -67,12 +95,19 @@ public class Dbs {
         return sizeDb;
     }
 
+    public SecondaryDatabase getTextDb() {
+        return textdb;
+    }
+
     public void close() {
 
         try {
-			if (sizeDb != null) { 
+			if (sizeDb != null) {
 				sizeDb.close();
-			}	
+			}
+            if (textdb != null) {
+                textdb.close();
+            }
             if (imdb != null) {
                 imdb.close();
             }

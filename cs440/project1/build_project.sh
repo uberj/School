@@ -17,12 +17,12 @@ javac -classpath $CLASSPATH $dot_java
 
 if [ "$1" == "test" ]
 then 
-#	java -Xmx2048m -classpath $CLASSPATH Main 1
+	java -Xmx2048m -classpath $CLASSPATH Main 1
 #	java -Xmx2048m -classpath $CLASSPATH Main 2 472621.xml
 #	java -Xmx2048m -classpath $CLASSPATH Main 3 400000.xml 402000.xml
 #	java -Xmx2048m -classpath $CLASSPATH Main 4 3879 
 #	java -classpath $CLASSPATH Main 5 2000 3000
-	java -classpath $CLASSPATH Main 6 20000.xml 30000.xml 2000 3000
+#	java -classpath $CLASSPATH Main 6 400000.xml 500000.xml 3000 4000
 #	java -classpath $CLASSPATH Main 7 Arnold 
 	exit 0 
 fi
