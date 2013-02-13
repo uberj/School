@@ -24,7 +24,9 @@ public class Main {
 
 
     public static String padString(String input) {
-        return String.format("%14s", input).replaceAll(".xml","").replaceAll(" ", "0");
+        input = input.replaceAll(".xml", "");
+        input = String.format("%10s", input).replace(" ", "0");
+        return input;
     }
 
 
@@ -37,6 +39,7 @@ public class Main {
 
 
     public static void populateDB() {
+        int migrated = 0;
         File rootPath = new File("/scratch/cs440/imdb");
         ArrayList<File> paths = new ArrayList<File>();
         paths = FileData.walkPath(rootPath);
@@ -51,7 +54,7 @@ public class Main {
         try {
             for(File path:paths) {
                 xml = new XMLFile(path);
-                key = new DatabaseEntry(padString(xml.getName()).getBytes());
+                key = new DatabaseEntry(xml.getName().replaceAll(".xml", "").getBytes());
                 data = new DatabaseEntry();
                 binding.objectToEntry(xml, data);
                 dbs.getDb().put(null, key, data);
@@ -68,28 +71,23 @@ public class Main {
     }
 
 
-    public static ArrayList<XMLFile> imdbPointQuery(long fileSize) {
-        ArrayList<XMLFile> foundEntries = new ArrayList<XMLFile>();
-        byte sizeKeyb[] = getSizeByteArray(fileSize);
+    public static XMLFile imdbPointQuery(long fileSize) {
+        byte[] sizeKeyb = getSizeByteArray(fileSize);
         try {
             dbs.setup(dbName);
-       } catch (DatabaseException e){
+        } catch (DatabaseException e){
            System.err.println("Caught Exception creating datatbase :");
            e.printStackTrace();
-       }
+        }
         XMLFileBinding binding = new XMLFileBinding();
         try {
+            secCursor = dbs.getSecDb().openSecondaryCursor(null, null);
+            XMLFile foundEntry = null;
             DatabaseEntry foundKey = new DatabaseEntry();
             DatabaseEntry foundData = new DatabaseEntry();
             DatabaseEntry sizeKey = new DatabaseEntry(sizeKeyb);
-            secCursor = dbs.getSecDb().openSecondaryCursor(null, null);
-            ret = secCursor.getSearchKey(sizeKey, foundData, LockMode.DEFAULT);
-	        xml = (XMLFile) binding.entryToObject(foundData);
-            while (ret == OperationStatus.SUCCESS && xml.getSize() == fileSize) {
-                foundEntries.add(xml);
-                ret = cursor.getNext(sizeKey, foundData, LockMode.DEFAULT);
-                xml = (XMLFile) binding.entryToObject(foundData);
-            }
+            ret =  secCursor.getSearchKey(sizeKey, foundData, LockMode.DEFAULT);
+            xml = (XMLFile) binding.entryToObject(foundData);
         } catch (DatabaseException e) {
             System.err.println("Database Error: " + e.toString());
             e.printStackTrace();
@@ -99,7 +97,7 @@ public class Main {
 		} finally {
     		dbs.close();
         }
-        return foundEntries;
+        return xml;
     }
 
 
@@ -114,7 +112,7 @@ public class Main {
         XMLFileBinding binding = new XMLFileBinding();
         try {
             DatabaseEntry foundData = new DatabaseEntry();
-            DatabaseEntry nameKey = new DatabaseEntry(padString(fileName).getBytes());
+            DatabaseEntry nameKey = new DatabaseEntry(fileName.replaceAll(".xml", "").getBytes());
             dbs.getDb().get(null, nameKey, foundData, null);
 			foundEntry =  (XMLFile) binding.entryToObject(foundData);
         } catch (DatabaseException e) {
@@ -134,8 +132,9 @@ public class Main {
 		ArrayList<XMLFile> foundEntries = new ArrayList<XMLFile>();
         long max = Long.valueOf(fileNameMax.replaceAll(".xml", ""));
         long current = 0;
+        long min = Long.valueOf(fileNameMin.replaceAll(".xml", ""));
         DatabaseEntry foundData = new DatabaseEntry();
-        DatabaseEntry nameKey = new DatabaseEntry(fileNameMin.getBytes());
+        DatabaseEntry nameKey = new DatabaseEntry(fileNameMin.replaceAll(".xml", "").getBytes());
         try {
 			dbs.setup(dbName);
 		} catch (DatabaseException e) {
@@ -149,7 +148,9 @@ public class Main {
 	    	xml = (XMLFile) binding.entryToObject(foundData);
             current = Long.valueOf(xml.getName().replaceAll(".xml", ""));
     		while (ret == OperationStatus.SUCCESS && current <= max) {
-                foundEntries.add(xml);
+                if(current > min) {
+                    foundEntries.add(xml);
+                }
                 ret = cursor.getNext(nameKey, foundData, LockMode.DEFAULT);
                 xml = (XMLFile) binding.entryToObject(foundData);
                 current = Long.valueOf(xml.getName().replaceAll(".xml", ""));
@@ -170,7 +171,6 @@ public class Main {
     public static ArrayList<XMLFile> imdbRangeQuery(long fileSizeMin, long fileSizeMax) {
         ArrayList<XMLFile> foundEntries = new ArrayList<XMLFile>();
         byte sizeKeyb[] = getSizeByteArray(fileSizeMin);
-
         DatabaseEntry foundKey = new DatabaseEntry();
         DatabaseEntry foundData = new DatabaseEntry();
         DatabaseEntry sizeKey = new DatabaseEntry(sizeKeyb);
@@ -187,7 +187,9 @@ public class Main {
             ret = secCursor.getSearchKeyRange(sizeKey, foundKey, foundData, LockMode.DEFAULT);
             xml = (XMLFile) binding.entryToObject(foundData);
             while (ret == OperationStatus.SUCCESS && xml.getSize() <= fileSizeMax) {
-                foundEntries.add(xml);
+                if(xml.getSize() > fileSizeMin) {
+                    foundEntries.add(xml);
+                }
                 ret = secCursor.getNext(sizeKey, foundKey, foundData, LockMode.DEFAULT);
                 xml = (XMLFile) binding.entryToObject(foundData);
             }
@@ -222,6 +224,8 @@ public class Main {
 			System.out.println("Insufficient args. . ERROR!");
 			System.exit(1);
 		}
+        ArrayList<XMLFile> results =  null;
+        XMLFile ret = null;
 
         switch(Integer.parseInt(args[0])) {
 
@@ -231,23 +235,34 @@ public class Main {
                 break;
             case 2:
                 System.out.println("Performing point query on file " + args[1]);
-                imdbPointQuery(args[1]);
+                ret = imdbPointQuery(args[1]);
+                System.out.println(ret);
                 break;
             case 3:
                 System.out.println("Performing range query over files fom " + args[1] + " - " + args[2]);
-                imdbRangeQuery(args[1], args[2]);
+                results = imdbRangeQuery(args[1], args[2]);
+                for(XMLFile result:results) {
+                    System.out.println(result);
+                }
                 break;
             case 4:
                 System.out.println("Performing point query on file size " + args[1]);	
-                imdbPointQuery(args[1]);
+                ret = imdbPointQuery(Long.parseLong(args[1]));
+                System.out.println(ret);
                 break;
             case 5:
                 System.out.println("Performing range query over file size from " + args[1] + " - " + args[2]);
-                // TODO: Add range query function
+                results = imdbRangeQuery(Long.parseLong(args[1]), Long.parseLong(args[2]));
+                for(XMLFile result:results) {
+                    System.out.println(result);
+                }
                 break;
             case 6:
                 System.out.println("Performing range query over file name and size from files " + args[1] + " - " + args[2] + " and size " + args[3] + " - "  + args[4]);
-
+                results = imdbRangeQuery(args[1], args[2], Long.parseLong(args[3]), Long.parseLong(args[4]));
+                for(XMLFile result:results) {
+                    System.out.println(result);
+                }
             default:
                 System.out.println("Invalid query ty.");
         }

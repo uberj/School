@@ -5,6 +5,7 @@ import com.sleepycat.db.DatabaseType;
 import com.sleepycat.db.SecondaryDatabase;
 import com.sleepycat.db.SecondaryConfig;
 
+import java.util.Comparator;
 import java.io.FileNotFoundException;
 
 public class Dbs {
@@ -38,7 +39,6 @@ public class Dbs {
         secDbConfig.setAllowCreate(true);
         secDbConfig.setTransactional(false);
         secDbConfig.setCacheSize(10000);
-
 
         try {
             imdbName = dbNames + "/" + imdbName;

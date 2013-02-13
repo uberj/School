@@ -39,7 +39,7 @@ public class FileData {
         "show", "side", "since", "sincere", "six", "sixty", "so", "some", "somehow", "someone",
         "something", "sometime", "sometimes", "somewhere", "still", "such", "system", "take", "ten",
         "than", "that", "the", "their", "them", "themselves", "then", "thence", "there", "thereafter",
-        "thereby", "therefore", "therein", "thereupon", "these", "they", "thickv", "thin", "third",
+        "thereby", "therefore", "therein", "thereupon", "these", "they", "thick", "thin", "third",
         "this", "those", "though", "three", "through", "throughout", "thru", "thus", "to", "together",
         "too", "top", "toward", "towards", "twelve", "twenty", "two", "un", "under", "until", "up",
         "upon", "us", "very", "via", "was", "we", "well", "were", "what", "whatever", "when", "whence",
@@ -69,7 +69,7 @@ public class FileData {
         Set<String> uniqWords = new HashSet<String>();
         for(String token:input.split("\\s+")) {
             if(!stopWords.contains(token.toLowerCase())) {
-                uniqWords.add(token);
+                uniqWords.add(token.toLowerCase());
             }
         }
         return uniqWords;
