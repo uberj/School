@@ -17,9 +17,9 @@ javac -classpath $CLASSPATH $dot_java
 
 if [ "$1" == "test" ]
 then 
-	java -Xmx2048m -classpath $CLASSPATH Main 1 > query.out.txt
-#	java -Xmx2048m -classpath $CLASSPATH Main 2 282441.xml >> query.out.txt
-#	java -classpath $CLASSPATH Main 3 20000.xml 30000.xml >> query.out.txt
+#	java -Xmx2048m -classpath $CLASSPATH Main 1 > /dev/null
+	java -Xmx2048m -classpath $CLASSPATH Main 2 356925.xml
+	java -Xmx2048m -classpath $CLASSPATH Main 3 340000.xml 360090.xml
 #	java -classpath $CLASSPATH Main 4 2000 >> query.out.txt
 #	java -classpath $CLASSPATH Main 5 2000 3000 >> query.out.txt
 #	java -classpath $CLASSPATH Main 6 20000.xml 30000.xml 2000 3000 >> query.out.txt

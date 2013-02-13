@@ -1,7 +1,9 @@
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.lang.Long;
+import java.lang.String;
 import java.util.ArrayList;
+
 
 import com.sleepycat.db.Cursor;
 import com.sleepycat.db.DatabaseException;
@@ -19,6 +21,11 @@ public class Main {
     public static XMLFile xml;
     public static Cursor cursor;
     public static SecondaryCursor secCursor;
+
+
+    public static String padString(String input) {
+        return String.format("%14s", input).replaceAll(".xml","").replaceAll(" ", "0");
+    }
 
 
     public static byte[] getSizeByteArray(long sizeKey) {
@@ -44,7 +51,7 @@ public class Main {
         try {
             for(File path:paths) {
                 xml = new XMLFile(path);
-                key = new DatabaseEntry(xml.getName().getBytes());
+                key = new DatabaseEntry(padString(xml.getName()).getBytes());
                 data = new DatabaseEntry();
                 binding.objectToEntry(xml, data);
                 dbs.getDb().put(null, key, data);
@@ -76,12 +83,12 @@ public class Main {
             DatabaseEntry foundData = new DatabaseEntry();
             DatabaseEntry sizeKey = new DatabaseEntry(sizeKeyb);
             secCursor = dbs.getSecDb().openSecondaryCursor(null, null);
-            while (secCursor.getNext(sizeKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
-				xml = (XMLFile) binding.entryToObject(foundData);
-				if (xml.getSize() != fileSize) {
-					break;
-				}
+            ret = secCursor.getSearchKey(sizeKey, foundData, LockMode.DEFAULT);
+	        xml = (XMLFile) binding.entryToObject(foundData);
+            while (ret == OperationStatus.SUCCESS && xml.getSize() == fileSize) {
                 foundEntries.add(xml);
+                ret = cursor.getNext(sizeKey, foundData, LockMode.DEFAULT);
+                xml = (XMLFile) binding.entryToObject(foundData);
             }
         } catch (DatabaseException e) {
             System.err.println("Database Error: " + e.toString());
@@ -107,7 +114,7 @@ public class Main {
         XMLFileBinding binding = new XMLFileBinding();
         try {
             DatabaseEntry foundData = new DatabaseEntry();
-            DatabaseEntry nameKey = new DatabaseEntry(fileName.getBytes());
+            DatabaseEntry nameKey = new DatabaseEntry(padString(fileName).getBytes());
             dbs.getDb().get(null, nameKey, foundData, null);
 			foundEntry =  (XMLFile) binding.entryToObject(foundData);
         } catch (DatabaseException e) {
@@ -149,8 +156,10 @@ public class Main {
             }
 	    } catch (DatabaseException e) {
             System.err.println("Caught Database Exception:");
+            e.printStackTrace();
         } catch (NullPointerException npe) {
             System.err.println("Caught Null Pointer Exception:");
+            npe.printStackTrace();
         } finally {
             dbs.close();
         }
@@ -158,7 +167,7 @@ public class Main {
     }
 
 
-    public static ArrayList<XMLFile> imdbPointQuery(long fileSizeMin, long fileSizeMax) {
+    public static ArrayList<XMLFile> imdbRangeQuery(long fileSizeMin, long fileSizeMax) {
         ArrayList<XMLFile> foundEntries = new ArrayList<XMLFile>();
         byte sizeKeyb[] = getSizeByteArray(fileSizeMin);
 
@@ -195,6 +204,18 @@ public class Main {
     }
 
 
+    public static ArrayList<XMLFile> imdbRangeQuery(String fileNameMin, String fileNameMax, long fileSizeMin, long fileSizeMax) {
+        ArrayList<XMLFile> found = imdbRangeQuery(fileNameMin, fileNameMax);
+        ArrayList<XMLFile> validEntries = new ArrayList<XMLFile>();
+        for(XMLFile xml:found) {
+            if(fileSizeMin <= xml.getSize() && xml.getSize() <= fileSizeMax) {
+                validEntries.add(xml);
+            }
+        }
+        return validEntries;
+    }
+
+
     public static void main(String[] args) {
 
         if(args.length < 1) {
@@ -214,7 +235,7 @@ public class Main {
                 break;
             case 3:
                 System.out.println("Performing range query over files fom " + args[1] + " - " + args[2]);
-                // TODO: Add range query function
+                imdbRangeQuery(args[1], args[2]);
                 break;
             case 4:
                 System.out.println("Performing point query on file size " + args[1]);	
