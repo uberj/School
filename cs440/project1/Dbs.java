@@ -16,6 +16,7 @@ public class Dbs {
     private SecondaryDatabase sizeDb = null;
     private XMLFileBinding dbBind = null;
     private SizeKeyCreator secKey = null;
+	private IndexComparator indexCmp = new IndexComparator();
     public Dbs() {}
 
     public void setup(String dbNames) throws DatabaseException {
@@ -29,6 +30,7 @@ public class Dbs {
         dbConfig.setAllowCreate(true);
         dbConfig.setTransactional(false);
         dbConfig.setCacheSize(10000);
+		dbConfig.setBtreeComparator(indexCmp);
 
         secDbConfig.setErrorStream(System.err);
         secDbConfig.setErrorPrefix("Secondary");
@@ -39,6 +41,7 @@ public class Dbs {
         secDbConfig.setAllowCreate(true);
         secDbConfig.setTransactional(false);
         secDbConfig.setCacheSize(10000);
+		secDbConfig.setBtreeComparator(indexCmp);
 
         try {
             imdbName = dbNames + "/" + imdbName;

@@ -3,7 +3,7 @@ import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.SecondaryDatabase;
 import java.io.IOException;
-
+import com.sleepycat.bind.tuple.IntegerBinding;
 import java.lang.Long;
 
 public class SizeKeyCreator implements SecondaryKeyCreator {
@@ -19,7 +19,7 @@ public class SizeKeyCreator implements SecondaryKeyCreator {
         DatabaseEntry dataEntry,
         DatabaseEntry resultEntry) {
         XMLFile xml = (XMLFile) theBinding.entryToObject(dataEntry);
-        resultEntry.setData(xml.getSizeByteArray());
+		IntegerBinding.intToEntry(xml.getSize(), resultEntry);
         return true;
     }
 }

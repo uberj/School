@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 public class XMLFile {
 
     public String name;
-    public long size;
+    public int size;
     public String content;
 
     public XMLFile () {
@@ -12,28 +12,21 @@ public class XMLFile {
 
     public XMLFile (File f) {
         name = f.getName();
-        size = f.length();
+        size = (int) f.length();
         content = FileData.getFileData(f);
     }
 
-    public XMLFile (String name, long size, String content) {
+    public XMLFile (String name, int size, String content) {
         this.name = name;
         this.size = size;
         this.content = content;
-    }
-
-    public byte[] getSizeByteArray() {
-        byte b[] = new byte[8];
-        ByteBuffer buf = ByteBuffer.wrap(b);
-        buf.putLong(this.size);
-        return b;
     }
 
     public String getName() {
         return this.name;
     }
 	
-	public long getSize() { 
+	public int getSize() { 
 		return this.size;
 	}
 
