@@ -1,0 +1,4 @@
+Relation R is in BCNF, iff:
+    for each non-trivial FD A -> B, A is a super key
+
+Super key - minimal fields that determine all other fields

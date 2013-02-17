@@ -1,0 +1,2 @@
+
+randNorm(mean, stdev, number-of-samples)

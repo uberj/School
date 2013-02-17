@@ -1,0 +1,47 @@
+Tursday 7:00 pm
+Midterm review
+
+
+normalcdf(left, right, mean, stdev)
+
+normalcdf(left, right) implied mean = 0 and stdev = 1
+
+On midterm
+----------
+Stem-leaf - hand
+Histogram - calculator
+Box-plot - calculator
+
+Interesting Features
+--------------------
+* Skewed
+* outliers
+* shape
+
+Probablitity
+------------
+* Union, Intersection
+* Conditional Probabliity
+
+P(A | B) = P(A U B)
+           --------
+            P(B)
+
+* Indepenence
+
+
+Given a table find expected value, variance, probabilities for:
+---------------------------------------------------------------
+* pdf, cdf
+* poisson
+* binomial
+
+sum(p(x)) = 1
+
+Continuous RV
+* Given function determine if pdf
+    * If S f(x) dx = 1 when f(x) >= 0
+Expected value, variance
+Uniform
+Exponential
+Normal

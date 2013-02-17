@@ -1,0 +1,12 @@
+Maxims
+------
+Catagorical Imperative:
+    * When questioning if an act is right or wrong, assume the act would be
+      'right' and measure the consequences.
+
+Universality:
+    * Imagine a rule followed universally. That is, imagine that everyone was
+      following the rule, would it be okay?
+Ends to Means:
+    * You are never allowed to manipulate anyone.
+
