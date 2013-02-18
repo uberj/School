@@ -16,10 +16,6 @@ public class XMLFileBinding extends TupleBinding {
         String name = ti.readString();
         long size = ti.readLong();
         String content = ti.readString();
-        System.out.println(
-            "entryToObject parsed: "
-            + name + " " + size + " " + content);
-
         XMLFile xmlfile = new XMLFile();
         xmlfile.name = name;
         xmlfile.size = size;
