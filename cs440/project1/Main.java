@@ -100,6 +100,38 @@ public class Main {
     }
 
 
+    public static XMLFile imdbPointQueryText(String text) {
+        try {
+            dbs.setup(dbName);
+        } catch (DatabaseException e){
+           System.err.println("Caught Exception creating datatbase :");
+           e.printStackTrace();
+        }
+        XMLFileBinding binding = new XMLFileBinding();
+        try {
+            secCursor = dbs.getTextDb().openSecondaryCursor(null, null);
+            XMLFile foundEntry = null;
+            DatabaseEntry foundKey = new DatabaseEntry();
+            DatabaseEntry foundData = new DatabaseEntry();
+            DatabaseEntry sizeKey = new DatabaseEntry(text.getBytes());
+            ret =  secCursor.getSearchKey(sizeKey, foundData, LockMode.DEFAULT);
+			if(ret == OperationStatus.SUCCESS) {
+            	xml = (XMLFile) binding.entryToObject(foundData);
+			} else {
+				xml = null;
+			}
+        } catch (DatabaseException e) {
+            System.err.println("Database Error: " + e.toString());
+            e.printStackTrace();
+        } catch (NullPointerException npe) {
+			System.err.println("Record not found.");
+			System.exit(1);
+		} finally {
+    		dbs.close();
+        }
+        return xml;
+    }
+
     public static XMLFile imdbPointQuery(String fileName) {
         XMLFile foundEntry = null;
         try {
@@ -265,6 +297,12 @@ public class Main {
                 for(XMLFile result:results) {
                     System.out.println(result);
                 }
+
+            case 7:
+                System.out.println("Performing query over text " + args[1]);
+                ret = imdbPointQueryText(args[1]);
+                System.out.println(ret);
+				break;
             default:
                 System.out.println("Invalid query ty.");
         }

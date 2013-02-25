@@ -12,9 +12,7 @@ export CLASSPATH=/usr/local/lib/berkeleydb.5.3/lib/db.jar:.
 export LD_LIBRARY_PATH=/usr/local/lib/berkeleydb.5.3/lib
 mkdir imdb 
 dot_java=`ls *.java`
-javac -classpath $CLASSPATH IndexComparator.java
-javac -classpath $CLASSPATH SizeKeyCreator.java
-javac -classpath $CLASSPATH Main.java
+javac -classpath $CLASSPATH $dot_java
 
 if [ "$1" == "test" ]
 then 
@@ -24,7 +22,7 @@ then
 #	java -Xmx2048m -classpath $CLASSPATH Main 4 2961
 #	java -classpath $CLASSPATH Main 5 2000 3000
 #	java -classpath $CLASSPATH Main 6 20000.xml 30000.xml 2000 3000
-#	java -classpath $CLASSPATH Main 7 Arnold 
+	java -classpath $CLASSPATH Main 7 videos 
 	exit 0 
 fi
 #java -classpath $CLASSPATH Main $args 

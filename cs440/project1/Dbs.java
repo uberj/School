@@ -13,17 +13,23 @@ public class Dbs {
     private Database imdb = null;
     private String imdbName = "primary";
     private String secName = "secondary";
+	private String textName = "text";
     private SecondaryDatabase sizeDb = null;
+	private SecondaryDatabase textDb = null;
     private XMLFileBinding dbBind = null;
     private SizeKeyCreator secKey = null;
+	private TextIndexKeyCreator textKey = null;
 	private IndexComparator indexCmp = new IndexComparator();
     public Dbs() {}
 
     public void setup(String dbNames) throws DatabaseException {
         dbBind = new XMLFileBinding();
         secKey = new SizeKeyCreator(dbBind);
+		textKey = new TextIndexKeyCreator(dbBind);
+
         DatabaseConfig dbConfig = new DatabaseConfig();
-        SecondaryConfig  secDbConfig = new SecondaryConfig();
+        SecondaryConfig secDbConfig = new SecondaryConfig();
+		SecondaryConfig textDbConfig = new SecondaryConfig();
         dbConfig.setErrorStream(System.err);
         dbConfig.setErrorPrefix("Databases");
         dbConfig.setType(DatabaseType.BTREE);
@@ -43,6 +49,17 @@ public class Dbs {
         secDbConfig.setCacheSize(10000);
 		secDbConfig.setBtreeComparator(indexCmp);
 
+        textDbConfig.setErrorStream(System.err);
+        textDbConfig.setErrorPrefix("textdb");
+        textDbConfig.setMultiKeyCreator(textKey);
+        textDbConfig.setType(DatabaseType.BTREE);
+        textDbConfig.setSortedDuplicates(true);
+        textDbConfig.setAllowPopulate(true); 
+        textDbConfig.setAllowCreate(true);
+        textDbConfig.setTransactional(false);
+        textDbConfig.setCacheSize(10000);
+
+
         try {
             imdbName = dbNames + "/" + imdbName;
             System.out.println("Database at: " + imdbName);
@@ -60,6 +77,14 @@ public class Dbs {
             System.err.println(" Error in Secondary creation : " + e.toString());
             e.printStackTrace();
         }
+
+		try {
+			textName = dbNames + "/" + textName;
+			textDb = new SecondaryDatabase(textName, textName, imdb, textDbConfig);
+		} catch(FileNotFoundException e) {
+			System.err.println("Error in TextDB creation :" + e.toString());
+			e.printStackTrace();
+		}
     }
 
     public Database getDb() {
@@ -70,9 +95,17 @@ public class Dbs {
         return sizeDb;
     }
 
+	public SecondaryDatabase getTextDb() {
+		return textDb;
+	}
+
     public void close() {
 
         try {
+			if (textDb != null) {
+				textDb.close();
+			}
+
 			if (sizeDb != null) { 
 				sizeDb.close();
 			}	
