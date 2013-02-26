@@ -30,10 +30,16 @@ public class XMLFile {
 		return this.size;
 	}
 
+<<<<<<< HEAD
 	public String getContent() {
 		return this.content;
 	}
 
+=======
+    public String getContent(){
+        return this.content;
+    }
+>>>>>>> master
     public String toString() {
            return  "<XMLFile: " + this.name + "/>\n " + "< XMLFileSize: " + this.size + "/>\n" + 
 			"<XMLContent: " + this.content + "/>\n";

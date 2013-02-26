@@ -4,7 +4,10 @@ import java.lang.Long;
 import java.lang.String;
 import java.lang.Integer;
 import java.util.ArrayList;
-
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Iterator;
+import java.util.List;
 
 import com.sleepycat.db.Cursor;
 import com.sleepycat.db.DatabaseException;
@@ -22,7 +25,7 @@ public class Main {
     public static XMLFile xml;
     public static Cursor cursor;
     public static SecondaryCursor secCursor;
-
+    public static Set<String> terms;
 
     public static String padString(String input) {
         input = input.replaceAll(".xml", "");
@@ -32,8 +35,14 @@ public class Main {
 
 
     public static void populateDB() {
+<<<<<<< HEAD
         int ikey = 0;
         File rootPath = new File("/home/zounese/imdb");
+=======
+        int migrated = 0;
+        Iterator it;
+        File rootPath = new File("/scratch/cs440/imdb");
+>>>>>>> master
         ArrayList<File> paths = new ArrayList<File>();
         paths = FileData.walkPath(rootPath);
         try {
