@@ -16,7 +16,6 @@ javac -classpath $CLASSPATH $dot_java
 
 if [ "$1" == "test" ]
 then 
-<<<<<<< HEAD
 #	java -Xmx2048m -classpath $CLASSPATH Main 1
 #	java -Xmx2048m -classpath $CLASSPATH Main 2 29993.xml
 #	java -Xmx2048m -classpath $CLASSPATH Main 3 29500.xml 30000.xml
@@ -24,7 +23,6 @@ then
 #	java -classpath $CLASSPATH Main 5 2000 3000
 #	java -classpath $CLASSPATH Main 6 20000.xml 30000.xml 2000 3000
 	java -classpath $CLASSPATH Main 7 videos 
-=======
 	java -Xmx2048m -classpath $CLASSPATH Main 1
 #	java -Xmx2048m -classpath $CLASSPATH Main 2 472621.xml
 #	java -Xmx2048m -classpath $CLASSPATH Main 3 400000.xml 402000.xml
@@ -32,7 +30,6 @@ then
 #	java -classpath $CLASSPATH Main 5 2000 3000
 #	java -classpath $CLASSPATH Main 6 400000.xml 500000.xml 3000 4000
 #	java -classpath $CLASSPATH Main 7 Arnold 
->>>>>>> master
 	exit 0 
 fi
 #java -classpath $CLASSPATH Main $args 

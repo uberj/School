@@ -14,39 +14,28 @@ public class Dbs {
     private String textName = "textDB";
     private String imdbName = "primary";
     private String secName = "secondary";
-<<<<<<< HEAD
 	private String textName = "text";
-=======
     private SecondaryDatabase textdb = null;
->>>>>>> master
     private SecondaryDatabase sizeDb = null;
 	private SecondaryDatabase textDb = null;
     private XMLFileBinding dbBind = null;
     private SizeKeyCreator secKey = null;
-<<<<<<< HEAD
-	private TextIndexKeyCreator textKey = null;
 	private IndexComparator indexCmp = new IndexComparator();
-=======
     private TextIndexKeyCreator textKey = null;
->>>>>>> master
     public Dbs() {}
 
     public void setup(String dbNames) throws DatabaseException {
         dbBind = new XMLFileBinding();
         secKey = new SizeKeyCreator(dbBind);
-<<<<<<< HEAD
 		textKey = new TextIndexKeyCreator(dbBind);
-
         DatabaseConfig dbConfig = new DatabaseConfig();
         SecondaryConfig secDbConfig = new SecondaryConfig();
 		SecondaryConfig textDbConfig = new SecondaryConfig();
-=======
         textKey = new TextIndexKeyCreator(dbBind);
         DatabaseConfig dbConfig = new DatabaseConfig();
         SecondaryConfig secDbConfig = new SecondaryConfig();
         SecondaryConfig textConfig = new SecondaryConfig();
         
->>>>>>> master
         dbConfig.setErrorStream(System.err);
         dbConfig.setErrorPrefix("Databases");
         dbConfig.setType(DatabaseType.BTREE);
@@ -134,28 +123,22 @@ public class Dbs {
         return sizeDb;
     }
 
-<<<<<<< HEAD
 	public SecondaryDatabase getTextDb() {
 		return textDb;
 	}
-=======
     public SecondaryDatabase getTextDb() {
         return textdb;
     }
->>>>>>> master
 
     public void close() {
 
         try {
-<<<<<<< HEAD
 			if (textDb != null) {
 				textDb.close();
 			}
 
 			if (sizeDb != null) { 
-=======
 			if (sizeDb != null) {
->>>>>>> master
 				sizeDb.close();
 			}
             if (textdb != null) {

@@ -35,14 +35,11 @@ public class Main {
 
 
     public static void populateDB() {
-<<<<<<< HEAD
         int ikey = 0;
         File rootPath = new File("/home/zounese/imdb");
-=======
         int migrated = 0;
         Iterator it;
         File rootPath = new File("/scratch/cs440/imdb");
->>>>>>> master
         ArrayList<File> paths = new ArrayList<File>();
         paths = FileData.walkPath(rootPath);
         try {
