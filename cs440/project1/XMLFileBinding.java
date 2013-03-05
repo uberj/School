@@ -8,13 +8,13 @@ public class XMLFileBinding extends TupleBinding {
     public void objectToEntry(Object object, TupleOutput to) {
         XMLFile xmlfile = (XMLFile) object;
         to.writeString(xmlfile.name);
-        to.writeLong(xmlfile.size);
+        to.writeInt(xmlfile.size);
         to.writeString(xmlfile.content);
     }
 
     public Object entryToObject(TupleInput ti) {
         String name = ti.readString();
-        long size = ti.readLong();
+        int size = ti.readInt();
         String content = ti.readString();
         XMLFile xmlfile = new XMLFile();
         xmlfile.name = name;

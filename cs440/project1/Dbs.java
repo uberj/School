@@ -14,16 +14,23 @@ public class Dbs {
     private String textName = "textDB";
     private String imdbName = "primary";
     private String secName = "secondary";
+	private String textName = "text";
     private SecondaryDatabase textdb = null;
     private SecondaryDatabase sizeDb = null;
+	private SecondaryDatabase textDb = null;
     private XMLFileBinding dbBind = null;
     private SizeKeyCreator secKey = null;
+	private IndexComparator indexCmp = new IndexComparator();
     private TextIndexKeyCreator textKey = null;
     public Dbs() {}
 
     public void setup(String dbNames) throws DatabaseException {
         dbBind = new XMLFileBinding();
         secKey = new SizeKeyCreator(dbBind);
+		textKey = new TextIndexKeyCreator(dbBind);
+        DatabaseConfig dbConfig = new DatabaseConfig();
+        SecondaryConfig secDbConfig = new SecondaryConfig();
+		SecondaryConfig textDbConfig = new SecondaryConfig();
         textKey = new TextIndexKeyCreator(dbBind);
         DatabaseConfig dbConfig = new DatabaseConfig();
         SecondaryConfig secDbConfig = new SecondaryConfig();
@@ -35,6 +42,7 @@ public class Dbs {
         dbConfig.setAllowCreate(true);
         dbConfig.setTransactional(false);
         dbConfig.setCacheSize(10000);
+		dbConfig.setBtreeComparator(indexCmp);
 
         secDbConfig.setErrorStream(System.err);
         secDbConfig.setErrorPrefix("Secondary");
@@ -45,6 +53,18 @@ public class Dbs {
         secDbConfig.setAllowCreate(true);
         secDbConfig.setTransactional(false);
         secDbConfig.setCacheSize(10000);
+		secDbConfig.setBtreeComparator(indexCmp);
+
+        textDbConfig.setErrorStream(System.err);
+        textDbConfig.setErrorPrefix("textdb");
+        textDbConfig.setMultiKeyCreator(textKey);
+        textDbConfig.setType(DatabaseType.BTREE);
+        textDbConfig.setSortedDuplicates(true);
+        textDbConfig.setAllowPopulate(true); 
+        textDbConfig.setAllowCreate(true);
+        textDbConfig.setTransactional(false);
+        textDbConfig.setCacheSize(10000);
+
 
         textConfig.setErrorStream(System.err);
         textConfig.setErrorPrefix("textIndex");
@@ -85,6 +105,14 @@ public class Dbs {
             notFound.printStackTrace();
             System.exit(-1);
         }
+
+		try {
+			textName = dbNames + "/" + textName;
+			textDb = new SecondaryDatabase(textName, textName, imdb, textDbConfig);
+		} catch(FileNotFoundException e) {
+			System.err.println("Error in TextDB creation :" + e.toString());
+			e.printStackTrace();
+		}
     }
 
     public Database getDb() {
@@ -95,6 +123,9 @@ public class Dbs {
         return sizeDb;
     }
 
+	public SecondaryDatabase getTextDb() {
+		return textDb;
+	}
     public SecondaryDatabase getTextDb() {
         return textdb;
     }
@@ -102,6 +133,11 @@ public class Dbs {
     public void close() {
 
         try {
+			if (textDb != null) {
+				textDb.close();
+			}
+
+			if (sizeDb != null) { 
 			if (sizeDb != null) {
 				sizeDb.close();
 			}
