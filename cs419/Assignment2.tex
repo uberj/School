@@ -1,0 +1,135 @@
+\documentclass[12pt]{article}
+\usepackage[hmargin=1in, vmargin=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\pagestyle{fancy}
+\usepackage[small]{caption}
+\usepackage{lastpage}
+\usepackage{listings}
+\usepackage{verbatim}
+\usepackage{url}
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{grey}{gray}{0.9}
+
+
+\lstset{
+    tabsize=2,
+    breaklines=true,
+    showstringspaces=false
+    backgroundcolor=\color{grey},
+    basicstyle=\ttfamily\scriptsize,
+}
+
+
+\def\author{Jacques Uber}
+\def\title{Assignment 2: Contributing to Django}
+\def\date{\today}
+
+\fancyhf{} % clear all header and footer fields
+\fancyhead[LO]{\author}
+\fancyhead[RO]{\date}
+\renewcommand{\headrulewidth}{0pt}
+% The weird spacing here is to get the spacing of \thepage to be right.
+\fancyfoot[C]{\thepage\
+                    / 2}
+
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4mm}
+\linespread{1}
+% Talk about how the hinge works and where the power switch it relative to how the hinge swings.
+% Pictures:
+%   Use copyright: Name, Year
+% Get rid of value language
+%
+% OO: Wednesday 9-12
+%
+\begin{document}
+%\fancyhead[CO]{\title}
+\begin{center}
+\underline{
+\large{\title}
+}
+\end{center}
+\singlespacing
+
+\subsection{Looking for broken tests}
+I initially thought I was going to find a broken test and contribute a fix for
+it. To search for a failing test I checked out the code base of django via git
+and found it pretty easy to run the test suite. The process was documented
+here: https://code.djangoproject.com/wiki/RunningDjangoTests. I gave up on this
+method of contributing after I found that no tests were failing.
+
+\subsection{Easy Pickings}
+In my initial write-up I mentioned that Django's ticketing system (TRAC) had a
+section of 'easy pickings' tickets. These tickets are supposed to be easy to
+complete. After looking over this list I realized that most of them would not
+be easy to work on. A lot of the tickets have been open for a while and take a
+lot of background knowledge to understand.
+
+\section{Finding a bug}
+After my initial attempts to force myself to contribute to Django, I took a
+break. At work I have been developing a webapp that uses
+Django and in one of the project's modules I needed to use Django's manual
+database transaction API.  I wrote my code using this API and things seemed to
+work correctly. I then decided to test my code; this is where I found a bug...
+eventually. I spend a few hours banging my head against the code, reading
+documentation, and stepping through things with a debugger. I even tried
+looking at the source code to see what was going on, but I couldn't find
+anything! I came back a day later and realized what was happening in the code,
+so I decided to get on the django IRC channel (\#django on freenode) and ask
+if anyone could help me out. Here are the IRC logs:
+
+\begin{lstlisting}
+2013-04-24 03:32:17  uberj   I was playing with transactions in a test case
+and I found something interesting which is _sort_ of documented. The docs on
+TransactionTestCase say "It also prevents the code under test from issuing any
+commit or rollback operations on the database..." which could be true if you
+take the word 'prevents' to mean 'overrides functions and doesn't complain when
+you use them'. For what I'm talking about see this:
+
+2013-04-24 03:32:17  uberj
+https://github.com/django/django/blob/master/django/test/testcases.py#L75 .
+This bit super hard and I wasted time before I realized that I needed to use
+TransactionTestCase and not TestCase. Why doen't noop throw an excpetion or at
+least print 'WARNING: you probably want to be using TransactionTestCase'?
+
+2013-04-24 03:34:42  willy1234x1   uberj: Fix it and submit a pull request?
+2013-04-24 03:34:48  willy1234x1   You mean nop though not noop?
+2013-04-24 03:34:54  uberj   yes
+2013-04-24 03:34:56  uberj   sorry
+2013-04-24 03:36:03  uberj   well, adding an exception might break some
+peoples tests (I'm not sure how people will feel about that). I also don't know
+how people feel about using 'print'; it could be considered bad style
+
+2013-04-24 03:38:50  uberj   willy1234x1: on a more meta note, where *is*
+the correct venue for a discussion on this? github pull request? SVN ticket?
+here in IRC?
+2013-04-24 03:39:01  uberj   *TRAC ticket
+
+2013-04-24 03:53:34  luminous   uberj: post a ticket and then send to
+mailing list to discuss?
+
+2013-04-24 03:55:40  uberj   luminous: okay
+\end{lstlisting}
+
+So I filed a ticket: https://code.djangoproject.com/ticket/20316 . When I
+filed the ticket I made sure to file it under the 'Testing' component. A core
+developer named charettes responded very quickly to my ticket and was able to
+classify my bug as a bug in the documentation and not in the code. The ticket
+is now 'Accepted' and is filed under Documentation.
+
+I never did post the the mailing list because I thought things were pretty well
+explained in the ticket.
+
+\section{What I learned}
+I learned that the Django community is pretty open to people filing tickets. It
+was also nice to be able to propose some ideas and have those ideas invalidated
+in a nice way.
+
+\end{document}
