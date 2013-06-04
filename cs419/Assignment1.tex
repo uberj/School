@@ -1,0 +1,91 @@
+\documentclass[12pt]{article}
+\usepackage[hmargin=1in, vmargin=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\pagestyle{fancy}
+\usepackage[small]{caption}
+\usepackage{lastpage}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\DeclareGraphicsExtensions{.png}
+\usepackage{url}
+
+\def\author{Jacques Uber}
+\def\title{Django: https://www.djangoproject.com/}
+\def\date{\today}
+
+\fancyhf{} % clear all header and footer fields
+\fancyhead[LO]{\author}
+\fancyhead[RO]{\date}
+\renewcommand{\headrulewidth}{0pt}
+% The weird spacing here is to get the spacing of \thepage to be right.
+\fancyfoot[C]{\thepage\
+                    / 2}
+
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4mm}
+\linespread{1}
+\begin{document}
+\begin{center}
+\underline{
+\large{\title}
+}
+\end{center}
+\doublespacing
+
+\section{Project Membership}
+Django has 4 BDFLs. A BDFL is a Benevolent Dictators for Life. The BDFLs are
+seen as the 'community' leaders and get to make the hard decisions when the
+community can't agree on something. According to Django's website, there are
+currently 42 core developers (developers with commit access). On github, it
+shows that Django has had over 100 people submit patches. Django developers
+communicate on a mailing list that is different from the mailing list used by
+django users use. There is also an official irc channel, \#django, on
+irc.freenode.net where django users and developers hang out and chat.
+
+\section{Project Infrastructure}
+Django has a split infrastructure. Both the Django source code, wiki, and issue
+tracker used to all be in the same place: TracSubversion. Also, SVN used to be
+the VCS. Eventually, the community decided that they wanted to switch to git
+and use github.com to host their source code reposity. Django now has their
+wiki and issue tracker under the original djangoproject.com domain and their
+source code and pull requests on github.com.
+
+Django has both their user and development mailing lists indexed by google
+groups.
+
+To maintain a log of changes to Django, a web blog is kept at
+https://www.djangoproject.com/weblog/. This is a great resource for starting to
+understand how the community works and the changes that have been made to
+Django over the years. You can easily go back to July 2005 and read their first
+post 'Preparing for launch'.
+
+\section{Django TL;DR}
+Django was started at Lawrence Journal-World as a tool to develop web
+applications more easily. It had four original contributers. Django is a web
+framework, which means that it isn't an application itself, but is instead a
+framwork for building applications. Django involves a lot of moving parts
+including but not limited to: an ORM (Object Relational Mapper), cacheing
+subsystem, form library, wsgi wrapper, and templating language. Django prides
+itself as being "The Web framework for perfectionists with deadlines".
+
+\section{Why Django?}
+I have been writing a lot of code destined to support websites for my job
+lately. This code has almost exclusivly been done using the Django
+framwork. I know my way around the source code already and have been in
+their IRC channel on freenode to ask questions about development with django
+(never about developing Django itself). I have also been on the Django
+developer mailing list for nearly 8 months and I try to read the daily digest
+every night (I don't always have time). I think that Django would be a good
+project to give back to. On their issue tracker they have a '"Easy Pickings"
+Tickets' section that lists tickets that I could help with.
+
+\section{Relevant Links}
+\begin{itemize}
+\item Django's ticket tracker: https://code.djangoproject.com/wiki/Reports
+\item Django's source code: https://github.com/django/django
+\item Django's community page: https://www.djangoproject.com/community/
+\end{itemize}
+
+\end{document}
