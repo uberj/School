@@ -1,4 +1,4 @@
-TEXFILE = "Assignment2"
+TEXFILE = "Assignment3"
 a1:
 	pdflatex $(TEXFILE).tex
 	rm *.log
