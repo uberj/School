@@ -1,4 +1,5 @@
 TEXFILE = "Assignment3"
+FINAL="FinalReport"
 a1:
 	pdflatex $(TEXFILE).tex
 	rm *.log
@@ -9,6 +10,12 @@ a1-view:
 	rm *.log
 	rm *.aux
 	evince $(TEXFILE).pdf
+
+final:
+	pdflatex $(FINAL).tex
+	rm *.log
+	rm *.aux
+	evince $(FINAL).pdf
 
 clean:
 	rm *.log

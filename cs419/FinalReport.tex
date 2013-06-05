@@ -1,0 +1,85 @@
+\documentclass[12pt]{article}
+\usepackage[hmargin=1in, vmargin=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\pagestyle{fancy}
+\usepackage[small]{caption}
+\usepackage{lastpage}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{url}
+\DeclareGraphicsExtensions{.png}
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{grey}{gray}{0.9}
+
+
+\lstset{
+    tabsize=2,
+    breaklines=true,
+    showstringspaces=false
+    backgroundcolor=\color{grey},
+    basicstyle=\ttfamily\scriptsize,
+}
+
+
+\def\author{Jacques Uber}
+\def\title{Final Report}
+\def\date{\today}
+
+\fancyhf{} % clear all header and footer fields
+\fancyhead[LO]{\author}
+\fancyhead[RO]{\date}
+\renewcommand{\headrulewidth}{0pt}
+% The weird spacing here is to get the spacing of \thepage to be right.
+\fancyfoot[C]{\thepage\
+                    / 1}
+
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4mm}
+\linespread{1}
+% Talk about how the hinge works and where the power switch it relative to how the hinge swings.
+% Pictures:
+%   Use copyright: Name, Year
+% Get rid of value language
+%
+% OO: Wednesday 9-12
+%
+\begin{document}
+%\fancyhead[CO]{\title}
+\begin{center}
+\underline{
+\large{\title}
+}
+\end{center}
+\singlespacing
+
+\section{Final Report}
+\subsection{What worked?}
+Just using the software on an almost daily basis gave me a lot of exposure to
+the code. Subscribing to the mailing list was also helpful because it gave me a
+view of the project that I would normally not see as just a typical user.
+Filtering through tickets looking for issues to work on was also helpful, as I
+now feel like I have a better view of what is being worked on.
+\subsection{What did not work?}
+I did not find the strategy of purposely seeking out issues to work. It may be
+because the project I chose (Django) is a very well maintained and active
+project; there was not a lot of low hanging fruit. The best contribution I made
+was when I was using the project's code and found a bug.
+\subsection{What you have learned?}
+I learned that opening a ticket is not as scary as it sounds.
+\subsection{What is the top advice you wish someone had given you at the start of this course?}
+For the purpose of contributing for the first time, choose a project that
+doesn't have so many contributers and has a lot of low hanging fruit. You may
+need to initially shop around for projects, but it will make the assignments
+go more smoothly.
+\subsection{How will you continue your involvement with FOSS in the future, if at all?}
+Because I have now done it, I will find it easier to open bug reports and
+fix issues while using Django.
+\end{document}
