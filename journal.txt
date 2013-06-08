@@ -1,0 +1,30 @@
+What technical information did you learn?
+    I learned how to best leverage github features like pull requests. I also learned about
+    designing software and the consequences of making decisions early on that you have to deal with
+    later in the software development process. I also learned a lot about Django's ORM.
+
+What non-technical information did you learn?
+    I learned about discussing requirements with customers. I learned how to tell the customer that
+    what they want may be technically difficult to achieve and I also learned how to get that
+    message across nicely. Another thing I learned is that remaining available for your customer to
+    contact is very important.
+
+What have you learned about project work?
+    Using source control software is critical to a project's health. Another important thing to do
+    when working on a project is have an issue tracker. We used git and github for our source
+    control software and github as our issue tracker. Having a place for all the developers to
+    communicate is also an important thing to have when working on a software project.
+
+What have you learned about project management?
+    Using highly advanced and professional tools like Gant Charts are really helpful to schedule
+    developer time. Knowing how long a feature is going to take is critical when you need to answer
+    deadline questions that your customer may have.
+
+What have you learned about working in teams?
+    Team work is very important. Being on the same page and knowing how your teammates feel about
+    the work they are doing (and the work you are doing) is important. Having a place where all the
+    team is present at all times (like an IRC chat room) is very handy for team health and
+    collaboration.
+
+If you could do it all over, what would you do differently?
+    I would have spent more time coding and less time planning.
