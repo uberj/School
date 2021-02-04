@@ -2,3 +2,5 @@ sympy
 scipy
 numpy
 jupyterlab
+pulp
+matplotlib
