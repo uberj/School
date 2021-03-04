@@ -4,3 +4,5 @@ numpy
 jupyterlab
 pulp
 matplotlib
+sklearn
+pandas
