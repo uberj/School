@@ -6,3 +6,4 @@ pulp
 matplotlib
 sklearn
 pandas
+networkx

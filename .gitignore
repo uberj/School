@@ -1,2 +1,5 @@
 cs440/text.pdf
 *.class
+*/.DS_Store
+.DS_Store
+.Rhistory
