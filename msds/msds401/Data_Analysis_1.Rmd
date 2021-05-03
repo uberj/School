@@ -8,21 +8,11 @@ output:
 ```{r setup, include = FALSE}
 # DO NOT ADD OR REVISE CODE HERE
 knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
-
 ```
-CONCLUSION SENTENCE . TODO. SUMMARY
-TODO: add titles to everything and labels
------
-
-The following code chunk will:
-
-(a) load the "ggplot2", "gridExtra" and "knitr" packages, assuming each has been installed on your machine,
-(b) read-in the abalones dataset, defining a new data frame, "mydata,"
-(c) return the structure of that data frame, and
-(d) calculate new variables, VOLUME and RATIO.
+This document explores a data sample containing the physical characteristics of abalone. I attempt to understand how different physical characteristics (like weight, gender, and volume) correlate to number of rings (which indicate age). Unfortunately, this proves to be difficult due to the different abalone age classes sharing very similar physical characterizes. Reasons for this variation may be that the sample is missing critical data such as the location the abalone was found or what species the abalone belongs to. I think a next step would be to consult with a biologist that specializes in abalones to determine what factors may be missing from the sample given our goal of predicting abalone age.
 
 
-```{r analysis_setup1, message = FALSE, warning = FALSE}
+```{r analysis_setup1, message = FALSE, warning = FALSE, echo=FALSE}
 
 # a) Load the ggplot2 and gridExtra packages.
 
@@ -63,7 +53,7 @@ table(mydata$CLASS, mydata$RINGS)
 
 **Question (1 point):  Briefly discuss the variable types and distributional implications such as potential skewness and outliers.**
 
-The `SEX` variable seems to be the only variable that is categorical and the `CLASS` variable is ordinal. The rest of the variables are ratio.
+The `SEX` variable seems to be the only variable that is categorical and the `CLASS` variable is ordinal. The rest of the variables are ratio. There also seems to be outliers: for example the max `SHUCK` is more than 3 times the mean.
 
 
 ```{r}
@@ -77,18 +67,23 @@ The `SEX` variable seems to be the only variable that is categorical and the `CL
 #8. CLASS = Age classification based on RINGS (A1= youngest,., A6=oldest) 
 BASE_COLUMNS = c("SEX", "LENGTH", "DIAM", "HEIGHT", "WHOLE", "SHUCK", "RINGS", "CLASS", "RATIO", "VOLUME")
 
+noyt = theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+        
 grid.arrange(
-  ggplot(mydata, aes(x=LENGTH)) + geom_boxplot(),
-  ggplot(mydata, aes(x=DIAM)) + geom_boxplot(),
-  ggplot(mydata, aes(x=HEIGHT)) + geom_boxplot(),
-  ggplot(mydata, aes(x=WHOLE)) + geom_boxplot(),
-  ggplot(mydata, aes(x=SHUCK)) + geom_boxplot(),
-  ggplot(mydata, aes(x=RINGS)) + geom_boxplot(),
-  ggplot(mydata, aes(x=RATIO)) + geom_boxplot(),
-  ggplot(mydata, aes(x=VOLUME)) + geom_boxplot()
-)
+  ggplot(mydata, aes(x=LENGTH)) + geom_boxplot() + noyt,
+  ggplot(mydata, aes(x=DIAM)) + geom_boxplot() + noyt,
+  ggplot(mydata, aes(x=HEIGHT)) + geom_boxplot() + noyt,
+  ggplot(mydata, aes(x=WHOLE)) + geom_boxplot() + noyt,
+  ggplot(mydata, aes(x=SHUCK)) + geom_boxplot() + noyt,
+  ggplot(mydata, aes(x=RINGS)) + geom_boxplot() + noyt,
+  ggplot(mydata, aes(x=RATIO)) + geom_boxplot() + noyt,
+  ggplot(mydata, aes(x=VOLUME)) + geom_boxplot() + noyt
+) 
 ```
-It seems that outliers do exist in this data-set for almost every variable. As I move through this exploratory exercise I'll make sure to keep their existence in the scope of the analysis.
+
+It seems that outliers do exist in this data-set for almost every variable. As I move through this exploratory exercise I'll make sure to keep their existence in mind.
 
 (1)(b) (1 point) Generate a table of counts using SEX and CLASS. Add margins to this table (Hint: There should be 15 cells in this table plus the marginal totals. Apply *table()* first, then pass the table object to *addmargins()* (Kabacoff Section 7.2 pages 144-147)).  Lastly, present a barplot of these data; ignoring the marginal totals.  
 
@@ -98,13 +93,13 @@ tbl_margins = tableGrob(addmargins(tbl))
 plot(tbl_margins, type='h')
 ```
 ```{r}
-barplot(tbl, legend=TRUE)
+barplot(tbl, legend=TRUE, ylab="count", xlab="Age Class", main="Age class counts of abalones by gender")
 ```
 
 **Essay Question (2 points):  Discuss the sex distribution of abalones.  What stands out about the distribution of abalones by CLASS?**
 
 
-From the table I can see that the sexes are close to being evenly distributed between the three categories of `SEX` -- The `M` class has the most samples with roughly 50 more samples thatn the `F` and `I` class. The bar plot shows that most of the `I` class is found in the classes `A1-3` and the M and F classes seem to be concentrated in the `A3-5` classes.
+From the table I can see that the sexes are close to being evenly distributed between the three categories of `SEX` -- The `M` class has the most samples with roughly 50 more samples thatn the `F` and `I` class. The bar plot shows that most of the `I` class is found in the classes `A1-3` and the `M` and `F` classes seem to be concentrated in the `A3-5` classes.
 
 
 (1)(c) (1 point) Select a simple random sample of 200 observations from "mydata" and identify this sample as "work." Use *set.seed(123)* prior to drawing this sample. Do not change the number 123. Note that *sample()* "takes a sample of the specified size from the elements of x." We cannot sample directly from "mydata." Instead, we need to sample from the integers, 1 to 1036, representing the rows of "mydata." Then, select those rows from the data frame (Kabacoff Section 4.10.5 page 87). 
@@ -116,7 +111,7 @@ set.seed(123)
 idxs = sample(seq(1:nrow(mydata)), 200)
 work = mydata[idxs,]
 
-plot(work[, 2:6])
+plot(work[, 2:6], main="Correlation plots")
 ```
 
 -----
@@ -127,8 +122,8 @@ plot(work[, 2:6])
 
 ```{r Part_2a}
 mydata$WHOLE_DENSITY = mydata$WHOLE/mydata$VOLUME
-ggplot(mydata, aes(x=WHOLE, y=VOLUME, color=CLASS)) + ylab("Volume (cc)") + xlab("Weight (grams)") + geom_point()
-ggplot(mydata, aes(x=WHOLE, y=VOLUME)) + geom_point() + ylab("Volume (cc)") + xlab("Weight (grams)") + facet_grid(~CLASS)
+ggplot(mydata, aes(x=WHOLE, y=VOLUME, color=CLASS)) + ylab("Volume (cc)") + xlab("Weight (grams)") + ggtitle("Volume | Weight scatter plot") + geom_point()
+ggplot(mydata, aes(x=WHOLE, y=VOLUME)) + geom_point() + ylab("Volume (cc)") + xlab("Weight (grams)") + ggtitle("Volume | Weight scatter plot. Seperate plot for each age class") + facet_grid(~CLASS)
 ```
 
 (2)(b) (2 points) Use "mydata" to plot SHUCK versus WHOLE with WHOLE on the horizontal axis. Color code data points by CLASS. As an aid to interpretation, determine the maximum value of the ratio of SHUCK to WHOLE.  Add to the chart a straight line with zero intercept using this maximum value as the slope of the line. If you are using the 'base R' *plot()* function, you may use *abline()* to add this line to the plot. Use *help(abline)* in R to determine the coding for the slope and intercept arguments in the functions. If you are using ggplot2 for visualizations, *geom_abline()* should be used.
@@ -137,21 +132,21 @@ ggplot(mydata, aes(x=WHOLE, y=VOLUME)) + geom_point() + ylab("Volume (cc)") + xl
 mydata$SHUCK_WHOLE_RATIO = mydata$SHUCK/mydata$WHOLE
 max_shuck_whole_ratio = max(mydata$SHUCK_WHOLE_RATIO)
 ggplot(mydata, aes(x=WHOLE, y=SHUCK, color=CLASS)) +
-  ylab("Meat weight (grams)") + xlab("Total weight (grams)") +
+  ylab("Meat weight (grams)") + xlab("Total weight (grams)") + ggtitle("Shuck | Total weight plot") +
   geom_point() +
-  geom_abline(slope=max_shuck_whole_ratio, yintercept=0, color="grey")
+  geom_abline(slope=max_shuck_whole_ratio, color="grey")
 
 ggplot(mydata, aes(x=WHOLE, y=SHUCK)) +
-  geom_point() +
+  geom_point() + ggtitle("Shuck | Total weight plot. Plot for each eage class") +
   ylab("Meat weight (grams)") + xlab("Total weight (grams)") +
-  geom_abline(slope=max_shuck_whole_ratio, yintercept=0, color="grey") +
+  geom_abline(slope=max_shuck_whole_ratio, color="grey") +
   facet_grid(~CLASS)
 
 ```
 
 **Essay Question (2 points):  How does the variability in this plot differ from the plot in (a)?  Compare the two displays.  Keep in mind that SHUCK is a part of WHOLE.  Consider the location of the different age classes.**
 
-This VOLUME-WHOLE plot can be thought of looking at average density within the abalone's volume. Similarly, the SHUCK-WHOLE plot can be thought of as looking at how much of the abalones weight can be attributed to the meat (i.e. shuck). The variability seems to be less in the SHUCK-WHOLE plot than in the VOLUME-WHOLE plot. This could mean that have abalones higher variation in shell weight (and other non-havestables) than in meat weights. To test this idea, I made a new variable called `OTHER` which represents the weight of an abalone not accounted for by `SHUCK`.
+This VOLUME-WHOLE plot can be thought of as looking at average density within the abalone's volume. Similarly, the SHUCK-WHOLE plot can be thought of as looking at how much of the abalones weight can be attributed to the meat (i.e. shuck). The variability seems to be less in the SHUCK-WHOLE plot than in the VOLUME-WHOLE plot. This could mean that have abalones higher variation in shell weight (and other non-havestables) than in meat weights. To test this idea, I made a new variable called `OTHER` which represents the weight of an abalone not accounted for by `SHUCK`.
 
 ```{r}
 mydata$OTHER = mydata$WHOLE - mydata$SHUCK
@@ -161,7 +156,8 @@ hist(mydata$OTHER, col = other, xlab="Weight (grams)", ylab="Count", ylim=c(0, 1
 hist(mydata$SHUCK, col = shuck, add = TRUE, alpha=0.2, breaks=15)
 legend("topright", c("Non-meat weight", "Meat weight"), col=c(other, shuck), lwd=10)
 ```
-This chart does show that the non-meat weight has a higher variation and that the meat weights are more concentrated around a central value.
+
+This chart does show that the non-meat weight has a higher variation and the meat weights are more concentrated around a central value.
 
 ```{r}
 par(mfrow = c(3,2));
@@ -176,7 +172,8 @@ plot.new()
 legend("bottomright", c("Non-meat weight", "Meat weight"), col=c(other, shuck), lwd=10)
 
 ```
-This chart explores a similar idea but by age class. As the abalone gets older the non-meat weight seems to get more spread out than the weight attributed to `SHUCK`.
+
+This chart explores a similar idea but by age class. As the abalone gets older the non-meat weight seems to get more spread out than the weight attributed to `SHUCK`. Meat weight seems to stop changing after the abalone reaches the `A3` age class.
 
 -----
 
@@ -186,9 +183,9 @@ This chart explores a similar idea but by age class. As the abalone gets older t
 
 ```{r Part_3a, fig.height=5}
 library(cowplot)
-p1 = ggplot(mydata, aes(x=RATIO)) + geom_histogram(bins = 30) + facet_grid(~SEX)
-p2 = ggplot(mydata, aes(x=RATIO)) + geom_boxplot() + facet_grid(~SEX)
-p3 = ggplot(mydata, aes(sample=RATIO)) + stat_qq() + stat_qq_line() + facet_grid(~SEX)
+p1 = ggplot(mydata, aes(x=RATIO)) + geom_histogram(bins = 30) + facet_grid(~SEX) + ggtitle("Ratio histograms by sex")
+p2 = ggplot(mydata, aes(x=RATIO)) + geom_boxplot() + facet_grid(~SEX) + ggtitle("Ratio boxplots by sex")
+p3 = ggplot(mydata, aes(sample=RATIO)) + stat_qq() + stat_qq_line() + facet_grid(~SEX) + ggtitle("Ratio ggplots by sex")
 
 #grid.arrange(p1, p2, p3)
 plot_grid(p1, p2, p3, align="v", nrow = 3, rel_heights = c(1/3, 1/3, 1/3))
@@ -198,7 +195,7 @@ plot_grid(p1, p2, p3, align="v", nrow = 3, rel_heights = c(1/3, 1/3, 1/3))
 
 **Essay Question (2 points): Compare the displays.  How do the distributions compare to normality? Take into account the criteria discussed in the sync sessions to evaluate non-normality.**
 
-The two sexes of `F` and `M` are the most normal, but `I` seems to be skewed right. The more normal a distribution is, the more it will resemble the line in the QQ plot. You can see that the `I`'s `RATIO` histogram is skewed a bit to the right and when you look at how it fits the line in the QQ plot, the upper left half pulls off the line. `M` is slightly skewed right as well -- you can see in the box plot that the right side of the box (between the Q2 and Q1 values) is larger than the box on the left (between the Q1 and Q2 values).
+The two sexes of `F` and `M` are the most normal, but `I` seems to be skewed right. The more normal a distribution is, the more it will resemble the line in the QQ plot. You can see that the `I`'s `RATIO` histogram is skewed a bit to the right and when you look at how it fits the line in the QQ plot, the upper right half pulls off the line. `M` is slightly skewed right as well -- you can see in the box plot that the right side of the box (between the Q2 and Q1 values) is larger than the box on the left (between the Q1 and Q2 values).
 
 (3)(b) (2 points) The boxplots in (3)(a) indicate that there are outlying RATIOs for each sex. *boxplot.stats()* can be used to identify outlying values of a vector. Present the abalones with these outlying RATIO values along with their associated variables in "mydata". Display the observations by passing a data frame to the kable() function. Basically, we want to output those rows of "mydata" with an outlying RATIO, but we want to determine outliers looking separately at infants, females and males.
 
@@ -214,9 +211,9 @@ kable(outliers[BASE_COLUMNS])
 
 **Essay Question (2 points):  What are your observations regarding the results in (3)(b)?**
 
-It seems that the older classes are very under represented in the outlier sample:
+It seems that the older classes are very under represented in the outlier sample. Here are the outliers by 
 ```{r}
-summary(outliers$CLASS)
+kable(summary(outliers$CLASS), col.names = list('# of outliers by CLASS'))
 ```
 
 
@@ -228,11 +225,11 @@ summary(outliers$CLASS)
 
 
 ```{r Part_4a, out.width = '100%'}
-p1 = ggplot(mydata, aes(VOLUME, CLASS)) + geom_boxplot() + geom_vline(xintercept=400, color="red")
-p2 = ggplot(mydata, aes(WHOLE, CLASS)) + geom_boxplot() + geom_vline(xintercept=70, color="blue")
+p1 = ggplot(mydata, aes(VOLUME, CLASS)) + geom_boxplot() + geom_vline(xintercept=400, color="red") + ggtitle("Volume boxplots by class")
+p2 = ggplot(mydata, aes(WHOLE, CLASS)) + geom_boxplot() + geom_vline(xintercept=70, color="blue") + ggtitle("Whole weight boxplots by class")
 
-p3 = ggplot(mydata, aes(VOLUME, RINGS)) + geom_point() + geom_vline(xintercept=400, color="red")
-p4 = ggplot(mydata, aes(WHOLE, RINGS)) + geom_point() + geom_vline(xintercept=70, color="blue")
+p3 = ggplot(mydata, aes(VOLUME, RINGS)) + geom_point() + geom_vline(xintercept=400, color="red") + ggtitle("# of rings | volume")
+p4 = ggplot(mydata, aes(WHOLE, RINGS)) + geom_point() + geom_vline(xintercept=70, color="blue") + ggtitle("# of rings | weight")
 grid.arrange(p1, p2, p3, p4)
 
 ```
@@ -263,25 +260,124 @@ kable(ratio_mat, caption="Ratio means by class and sex")
 
 (5)(b) (3 points) Present three graphs. Each graph should include three lines, one for each sex. The first should show mean RATIO versus CLASS; the second, mean VOLUME versus CLASS; the third, mean SHUCK versus CLASS. This may be done with the 'base R' *interaction.plot()* function or with ggplot2 using *grid.arrange()*.
 
-```{r Part_5b, fig.width = 9}
-p1 = ggplot(mydata, aes(x=RATIO, y=))
+```{r Part_5b, fig.height=5, echo=FALSE, message = FALSE, warning = FALSE}
+library(data.table)
+library(tidyverse)
+prep_df = function(mat, col_name) {
+  # transpose
+  df = data.frame(mat)
 
+  t_df <- data.table::transpose(df)
+  # get row and colnames in order
+  colnames(t_df) <- rownames(df)
+  rownames(t_df) <- colnames(df)
+  t_df$CLASS = rownames(t_df)
+  rbind(
+    t_df %>% select('F', 'CLASS') %>% rename_with(function(x){col_name}, F) %>% mutate(SEX='F'),
+    t_df %>% select('M', 'CLASS') %>% rename_with(function(x){col_name}, M) %>% mutate(SEX='M'),
+    t_df %>% select('I', 'CLASS') %>% rename_with(function(x){col_name}, I) %>% mutate(SEX='I')
+  )  
+}
+
+ratio_df = prep_df(ratio_mat, 'MEAN')
+p1 = ggplot(ratio_df, aes(x=CLASS, y=MEAN, group=SEX)) +
+  geom_line(aes(linetype=SEX)) +
+  geom_point(aes(shape=SEX)) +
+  labs(title="Plot of mean ratio",x="CLASS", y = "RATIO")
+
+volume_df = prep_df(volume_mat, 'MEAN')
+p2 = ggplot(volume_df, aes(x=CLASS, y=MEAN, group=SEX)) +
+  geom_line(aes(linetype=SEX))+
+  geom_point(aes(shape=SEX)) +
+  labs(title="Plot of mean volume",x="CLASS", y = "VOLUME (cc)")
+
+shuck_df = prep_df(shuck_mat, 'MEAN')
+
+p3 = ggplot(shuck_df, aes(x=CLASS, y=MEAN, group=SEX)) +
+  geom_line(aes(linetype=SEX))+
+  geom_point(aes(shape=SEX)) +
+  labs(title="Plot of mean shuck",x="CLASS", y = "WEIGHT (g)")
+
+grid.arrange(p1, p2, p3)
 ```
 
 **Essay Question (2 points):  What questions do these plots raise?  Consider aging and sex differences.**
 
-***Answer: (Enter your answer here.)***
+The means for Male and Female abalones are similar. In all of the plots the infant means are lower than both Female and Male classes. But, even though the means are close for Male and Female abalones for age classes `A2` thourgh `A5`, I do wonder what the charts looks like with deviation shown along with the mean:
+
+```{r,  fig.height=5}
+sd_aggdf = aggregate(x=fiveadf[, !(names(fiveadf) %in% c('SEX', 'CLASS'))], by=list(fiveadf$SEX, fiveadf$CLASS), FUN=sd)
+sd_mdata = c(sd_aggdf[, 3:length(sd_aggdf)])
+
+sd_volume_mat = matrix(sd_mdata$VOLUME, nrow=3, ncol=5, dimnames = list(c("F", "I", "M"), c("A1", "A2", "A3", "A4", "A5")))
+sd_shuck_mat = matrix(sd_mdata$SHUCK, nrow=3, ncol=5, dimnames = list(c("F", "I", "M"), c("A1", "A2", "A3", "A4", "A5")))
+sd_ratio_mat = matrix(sd_mdata$RATIO, nrow=3, ncol=5, dimnames = list(c("F", "I", "M"), c("A1", "A2", "A3", "A4", "A5")))
+
+ratio_df$SD = prep_df(sd_ratio_mat, "SD")$SD
+volume_df$SD = prep_df(sd_volume_mat, "SD")$SD
+shuck_df$SD = prep_df(sd_shuck_mat, "SD")$SD
+
+
+
+
+grid.arrange(
+  ggplot(ratio_df, aes(x=CLASS, y=MEAN, group=SEX, color=SEX)) +
+    geom_line(aes(linetype=SEX)) +
+    geom_errorbar(aes(ymin=MEAN-SD, ymax=MEAN+SD), width=.1) +
+    geom_point(aes(shape=SEX)) +
+    labs(title="Plot of mean ratio",x="CLASS", y = "RATIO"),
+
+  ggplot(volume_df, aes(x=CLASS, y=MEAN, group=SEX, color=SEX)) +
+    geom_line(aes(linetype=SEX)) +
+    geom_errorbar(aes(ymin=MEAN-SD, ymax=MEAN+SD), width=.1) +
+    geom_point(aes(shape=SEX)) +
+    labs(title="Plot of mean volume",x="CLASS", y = "VOLUME (cc)"),
+
+  ggplot(shuck_df, aes(x=CLASS, y=MEAN, group=SEX, color=SEX)) +
+    geom_line(aes(linetype=SEX))+
+    geom_errorbar(aes(ymin=MEAN-SD, ymax=MEAN+SD), width=.1) +
+    geom_point(aes(shape=SEX)) +
+    labs(title="Plot of mean shuck",x="CLASS", y = "WEIGHT (g)")
+)
+```
+This plot shows error bars that indicate +/- one standard deviation from the mean. As you can see, there is a lot of overlap. What this tells me is that for any given class and gender, the distribution of sexes are very hard to differentiate. This may be why predicting age from sex, volume, or shuck weight was so difficult for the original study.
 
 5(c) (3 points) Present four boxplots using *par(mfrow = c(2, 2)* or *grid.arrange()*. The first line should show VOLUME by RINGS for the infants and, separately, for the adult; factor levels "M" and "F," combined. The second line should show WHOLE by RINGS for the infants and, separately, for the adults. Since the data are sparse beyond 15 rings, limit the displays to less than 16 rings. One way to accomplish this is to generate a new data set using subset() to select RINGS < 16.  Use ylim = c(0, 1100) for VOLUME and ylim = c(0, 400) for WHOLE.  If you wish to reorder the displays for presentation purposes or use ggplot2 go ahead.
 
 ```{r Part_5c}
+infant_df = mydata[mydata$SEX == "I",] %>% filter( RINGS < 16)
+adult_df = mydata %>% filter(RINGS < 16 ) %>% filter(SEX == "M" | SEX == "F")
 
+p1 = ggplot(infant_df, aes(x=RINGS, y=VOLUME, group=RINGS)) +
+  geom_boxplot() +
+  labs(title="Infant Volume | Rings", x="RINGS", y = "Volume (cc)") + 
+  ylim(c(0, 1100))
+
+p2 = ggplot(adult_df, aes(x=RINGS, y=VOLUME, group=RINGS)) +
+  geom_boxplot() +
+  labs(title="Adult Volume | Rings", x="RINGS", y = "Volume (cc)") + 
+  ylim(c(0, 1100))
+  
+p3 = ggplot(infant_df, aes(x=RINGS, y=WHOLE, group=RINGS)) +
+  geom_boxplot() +
+  labs(title="Infant Whole Weight | Rings", x="RINGS", y = "Weight (g)") +
+  ylim(c(0, 400))
+
+p4 = ggplot(adult_df, aes(x=RINGS, y=WHOLE, group=RINGS)) +
+  geom_boxplot() +
+  labs(title="Adult Whole Weight | Rings", x="RINGS", y = "Weight (g)") +
+  ylim(c(0, 400))
+
+grid.arrange(p1, p2, p3, p4, nrow=2, ncol=2)
 
 ```
 
 **Essay Question (2 points):  What do these displays suggest about abalone growth?  Also, compare the infant and adult displays.  What differences stand out?**
 
-***Answer: (Enter your answer here.)***
+These charts show something very interesting -- adult abalones seem to, somewhere around the 12 ring mark, begin to loose weight and volume after they reach the 12 ring mark. The adult abalones have a much larger IQR than the infant abalones and the whiskers are also longer for the adults. I cannot explain this, and it may be worth consulting an expert on whether or not it is common for abalones to loose weight as they age.
+
+Its worth pointing out that there seems to be many infant abalones that have the same weight, volume and ring count as adult abalone.
+
 
 -----
 
@@ -293,12 +389,18 @@ p1 = ggplot(mydata, aes(x=RATIO, y=))
 
 **Essay Question 1) (5 points)	Based solely on these data, what are plausible statistical reasons that explain the failure of the original study? Consider to what extent physical measurements may be used for age prediction.**
 
-***Answer: (Enter your answer here.)***
+It could be that different age classes overlap too much with regards to their physical attributes. From what I understand about statistical prediction, when you are predicting something about an object you want the objects attributes to form different categories that correlate to the value you are trying to predict. In the case of these abalones, it seems that the attributes of different age classes are fairly homongenous -- they don't form distinct categories of values. For example the weight of a abalone is very similar for age classes `A3`, `A4`, and `A5`. A similar thing happens with volume: age classes have very similar volumes. _This may be an issue with the data, though, and not an underlying reality about abalones._
+
+One thing that is absent from the abalone data is information about how the sample was collected. According to an article by FISHTECH INC [0], adult abalones feed on algae that is floating in the water. If you sample abalones from different locations that have different algae content then you may get abalones with different growth rates. This could explain the large overlap in physical characteristics. Another possible hidden source of variability could be species -- the sample we are analyzing now may be made up of different types of abalone each with their own growth, gender, and physical characteristics. For example, according to Marine biologist Genny Anderson, off the cost of California there are six different species of abalones all having different physical characteristics [1].
+
+[0] http://www.fishtech.com/facts.html
+
+[1] http://www.marinebio.net/marinescience/06future/abspdiv.htm?iframe=true&width=100%&height=100%
 
 **Essay Question 2) (3 points) Do not refer to the abalone data or study.  If you were presented with an overall histogram and summary statistics from a sample of some population or phenomenon and no other information, what questions might you ask before accepting them as representative of the sampled population or phenomenon?**
 
-***Answer: (Enter your answer here.)***
+Some questions I would ask: How large is the population from which the sample was taken? What was the sampling strategy -- was it a simple random sample, systemic sample, stratified sample, or other type? What prior information is known about the population and does any other data exists to corroborate the sample data or study? How were the measurements taken (i.e. human vs instrument, time of day, etc.)?
 
 **Essay Question 3)  (3 points)	Do not refer to the abalone data or study.  What do you see as difficulties analyzing data derived from observational studies? Can causality be determined?  What might be learned from such studies?**
 
-***Answer: (Enter your answer here.)***
+I'm not sure that anything in statistics is going to prove something "causes" something else. But, I do think that statistics can be used to achieve some goal: Like predict a value (with some level of confidence) from an observation. One issue with observational studies is that if the observations are done by a human, they can be subjective. Another issue is you cannot go back and collect additional data after the study has been conducted.

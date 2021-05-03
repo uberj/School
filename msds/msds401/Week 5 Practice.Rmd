@@ -1,0 +1,54 @@
+---
+title: "Week 5 Practice"
+author: "Jacques Uber"
+date: "5/2/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("tidyverse")
+library(readxl)
+```
+
+# Problem
+Chapter 8 Analyzing the Databases # 1
+
+_Using the manufacturing database as a sample, construct a 95% confidence interval for the population mean number of production workers. What is the point estimate? How much is the error of the estimate? Comment on the results._
+```{r}
+BLACK_DATABASES = "./data/Databases_in_Excel.xlsx"
+data = read_excel(BLACK_DATABASES, sheet = "Manufacturer")
+```
+
+We don't know the population mean or the population standard deviation, so its likely that a t-distribution is our best option. What does our sample population look like?
+```{r, warning=FALSE}
+library(ggplot2)
+ggplot(data, aes(x=`No. Prod. Wkrs.`)) + geom_histogram()
+```
+Unfortunately, this doesn't look normal -- it is skewed heavily to the right. According to Black, though, the t-distribution is a relatively robust statistic so the fact that our population distribution is not normal should be okay.
+
+Lets now compute our 95% confidence interval using the formula:
+
+$$\overline{x} - t_{\alpha/2,n-1} \frac{s}{\sqrt{n}} \leq \mu \leq \overline{x} + t_{\alpha/2,n-1} \frac{s}{\sqrt{n}} $$
+
+```{r}
+sample_data = data %>% sample_frac(1)
+n = nrow(sample_data)
+df = n - 1
+alpha = 0.95
+xbar = mean(sample_data$`No. Prod. Wkrs.`)
+s = sd(sample_data$`No. Prod. Wkrs.`)
+t = dt(alpha/2, df)
+error = t * (s/sqrt(n))
+low = xbar - error
+high = xbar + error
+```
+
+
+```{r}
+sprintf("%s <= population average <= %s with %s precent confidence", round(low,2), round(high, 2), round(100*alpha,0))
+sprintf("The point estimate is %s (which is also the population mean", round(xbar, 2))
+sprintf("The error is %s", round(error, 2))
+```
+
+I'm not confident I approached this problem correctly.
