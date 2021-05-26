@@ -151,7 +151,11 @@ p4 = ggplot(dat, aes(sample=L_RATIO)) +
   labs(title=sprintf("Normality test for Log(RATIO) by class")) + 
   facet_grid(~CLASS)
 
-grid.arrange(p1, p2, p3, p4)
+p5 = ggplot(dat, aes(x=CLASS, y=L_RATIO)) +
+  geom_boxplot()
+
+grid.arrange(p1, p2, p3, p4, p5, layout_matrix=rbind(c(1,1,2,2), c(3,3,4,4), c(5,5,5,5), c(5,5,5,5)))
+
 ```
 
 (1)(c) Test the homogeneity of variance across classes using *bartlett.test()* (Kabacoff Section 9.2.2, p. 222). 
@@ -217,16 +221,16 @@ table(dat$TYPE)
 p1 = ggplot(dat, aes(x=VOLUME)) + 
   geom_histogram() + 
   facet_grid(~TYPE) +
-  labs(title=sprintf("Histogram of Volume for both Adult and Infant abalones"), xlab="Volume (cc)")
+  labs(title=sprintf("Histogram of Volume for both Adult and Infant abalones"), x="Volume (cc)")
 p2 = ggplot(dat, aes(sample=VOLUME)) + 
   geom_qq() + 
   geom_qq_line() + 
   facet_grid(~TYPE) +
-  labs(title=sprintf("QQ Plot of Volume for both Adult and Infant abalones"), xlab="Volume (cc)")
+  labs(title=sprintf("QQ Plot of Volume for both Adult and Infant abalones"), x="Volume (cc)")
 
 p3 = ggplot(dat, aes(x=VOLUME, y=TYPE)) + 
   geom_boxplot() + 
-  labs(title=sprintf("Boxplots of Volume for both Adult and Infant abalones"), xlab="Volume (cc)")
+  labs(title=sprintf("Boxplots of Volume for both Adult and Infant abalones"), x="Volume (cc)")
 
 grid.arrange(p1, p2, p3)
 ```
@@ -239,18 +243,32 @@ The adult distribution is more normal than the infants'. The infant abalones hav
 (3)(b) Create a scatterplot of SHUCK versus VOLUME and a scatterplot of their base ten logarithms, labeling the variables as L_SHUCK and L_VOLUME. Please be aware the variables, L_SHUCK and L_VOLUME, present the data as orders of magnitude (i.e. VOLUME = 100 = 10^2 becomes L_VOLUME = 2). Use color to differentiate CLASS in the plots. Repeat using color to differentiate by TYPE. 
 
 ```{r Part_3b, fig.width = 12, fig.height = 8}
+p1 = ggplot(dat, aes(x=SHUCK, y=VOLUME, color=CLASS)) +
+  labs(title=sprintf("Scatterplot of SHUCK vs VOLUME"), x="SHUCK (g)", y="VOLUME (cc)") +
+  geom_point()
 
 dat$L_SHUCK = log(dat$SHUCK)
 dat$L_VOLUME = log(dat$VOLUME)
-ggplot(dat, aes(x=L_SHUCK, y=L_VOLUME, color=CLASS)) +
-  labs(title=sprintf("Histogram of Volume for both Adult and Infant abalones"), xlab="log SHUCK (g)", ylab="log VOLUME (cc)") +
+p2 = ggplot(dat, aes(x=L_SHUCK, y=L_VOLUME, color=CLASS)) +
+  labs(title=sprintf("Scatterplot of log(SHUCK) vs log(VOLUME)"), x="log SHUCK (g)", y="log VOLUME (cc)") +
   geom_point()
+grid.arrange(p1, p2)
+
+p3 = ggplot(dat, aes(x=SHUCK, y=VOLUME, color=TYPE)) +
+  labs(title=sprintf("Scatterplot of SHUCK vs VOLUME"), x="SHUCK (g)", y="VOLUME (cc)") +
+  geom_point()
+
+p4 = ggplot(dat, aes(x=L_SHUCK, y=L_VOLUME, color=TYPE)) +
+  labs(title=sprintf("Scatterplot of log(SHUCK) vs log(VOLUME)"), x="log SHUCK (g)", y="log VOLUME (cc)") +
+  geom_point()
+grid.arrange(p3, p4)
 ```
 
 **Additional Essay Question:  Compare the two scatterplots. What effect(s) does log-transformation appear to have on the variability present in the plot?  What are the implications for linear regression analysis? Where do the various CLASS levels appear in the plots? Where do the levels of TYPE appear in the plots?**
 
-***Answer: (Enter your answer here.)***
+The log transformation for both the `TYPE` and `CLASS` types would reduce the sum of square error for a hypothetical regression line. With the `CLASS` charts, when we look at `L_VOLUME` and `L_SHUCK` the `A1` age class seems to get pushed away from the mass of other values -- this could help us during classification. Because the other classes are grouped together this suggests that abalone growth slows after reaching the more advanced age classes.
 
+The log plot for `TYPE` on the other hand is not so helpful. The regression does get tighter, but the two gender types become much more intermingled when we apply the log transform to `VOLUME` and `SHUCK`.
 
 ***####   Section 4: (5 points) ####***
 
@@ -258,26 +276,28 @@ ggplot(dat, aes(x=L_SHUCK, y=L_VOLUME, color=CLASS)) +
 
 ```{r Part_4a1}
 
-mydata$TYPE[mydata$CLASS == "A4" | mydata$CLASS == "A5"] <- "ADULT"
-table(mydata$TYPE)
+dat$TYPE[dat$CLASS == "A4" | dat$CLASS == "A5"] <- "ADULT"
+table(dat$TYPE)
 
 ```
 
 (4)(a2) Regress L_SHUCK as the dependent variable on L_VOLUME, CLASS and TYPE (Kabacoff Section 8.2.4, p. 178-186, the Data Analysis Video #2 and Black Section 14.2). Use the multiple regression model: L_SHUCK ~ L_VOLUME + CLASS + TYPE. Apply *summary()* to the model object to produce results.
 
 ```{r Part_4a2}
-
-
+model = lm(L_SHUCK ~ L_VOLUME + CLASS + TYPE, dat)
+summary(model)
+model = lm(L_SHUCK ~ L_VOLUME + CLASS, dat)
+summary(model)
 ```
 
 **Essay Question:  Interpret the trend in CLASS levelcoefficient estimates? (Hint:  this question is not asking if the estimates are statistically significant. It is asking for an interpretation of the pattern in these coefficients, and how this pattern relates to the earlier displays).**
 
-***Answer: (Enter your answer here.)***
+The trend seems to be that as class increases (from 2 to 5) so too does the magnitude of the coefficient. This aligns with the previous charts as it indicates that as class goes up so too does `SHUCK` weight.
+
 
 **Additional Essay Question:  Is TYPE an important predictor in this regression? (Hint:  This question is not asking if TYPE is statistically significant, but rather how it compares to the other independent variables in terms of its contribution to predictions of L_SHUCK for harvesting decisions.)  Explain your conclusion.**
 
-***Answer: (Enter your answer here.)***
-
+`TYPE` is not an important predictor for meat content. While `TYPE` does contain _some_ predictive power, its coefficient is nearly five times as small as the class `A5`'s predictive contribution. If we take `TYPE` out of our model and rerun it, the adjusted R-squared value (which accounts for adding and removing predictors) goes from 0.9501 to 0.9498 (meaning that `TYPE` only contributed to 0.0003 to improving the R value).
 -----
 
 The next two analysis steps involve an analysis of the residuals resulting from the regression model in (4)(a) (Kabacoff Section 8.2.4, p. 178-186, the Data Analysis Video #2).
@@ -289,20 +309,58 @@ The next two analysis steps involve an analysis of the residuals resulting from 
 (5)(a) If "model" is the regression object, use model$residuals and construct a histogram and QQ plot. Compute the skewness and kurtosis. Be aware that with 'rockchalk,' the kurtosis value has 3.0 subtracted from it which differs from the 'moments' package. 
 
 ```{r Part_5am, fig.width = 12}
+dat$m1_residuals = model$residuals
+
+kurt = rockchalk::kurtosis(model$residuals)
+skew = rockchalk::skewness(model$residuals)
 
 
+p1 = ggplot(rmodel, aes(residuals)) + geom_histogram() + labs(title=sprintf("Residuals histogram | Kurtosis %s | Skewness %s", round(kurt, 2), round(skew, 2)))
+p2 = ggplot(rmodel, aes(sample=residuals)) + 
+  geom_qq() + 
+  geom_qq_line() +
+  labs(title="QQ plot of residuals")
+  geom_qq_line()
+  
+grid.arrange(p1, p2)
 ```
 
 (5)(b) Plot the residuals versus L_VOLUME, coloring the data points by CLASS and, a second time, coloring the data points by TYPE. Keep in mind the y-axis and x-axis may be disproportionate which will amplify the variability in the residuals. Present boxplots of the residuals differentiated by CLASS and TYPE (These four plots can be conveniently presented on one page using *par(mfrow..)* or *grid.arrange()*. Test the homogeneity of variance of the residuals across classes using *bartlett.test()* (Kabacoff Section 9.3.2, p. 222).  
 
 ```{r Part_5b, fig.width = 12, fig.height = 8}
+p1 = ggplot(dat) + 
+  geom_point(aes(x=L_VOLUME, y=m1_residuals, color=CLASS)) +
+  labs(title="Scatterplot of model residuals vs log(Volume) | Colored by Class", y="Residuals", x="log(Volume)") +
+  geom_abline(intercept = 0, slope=0, color='black')
+p2 = ggplot(dat) + 
+  geom_point(aes(x=L_VOLUME, y=m1_residuals, color=TYPE)) +
+  labs(title="Scatterplot of model residuals vs log(Volume) | Colored by Type", y="Residuals", x="log(Volume)") +
+  geom_abline(intercept = 0, slope=0, color='black')
+p3 = ggplot(dat) +
+  labs(title="Boxplots of residuals by class", y="Residuals") +
+  geom_boxplot(aes(x=CLASS, y=m1_residuals))
+p4 = ggplot(dat) +
+  labs(title="Boxplots of residuals by type", y="Residuals") +
+  geom_boxplot(aes(x=TYPE, y=m1_residuals))
 
+grid.arrange(p1, p2, p3, p4, layout_matrix=rbind(
+  c(1,1,2,2),
+  c(1,1,2,2),
+  c(3,3,4,4),
+  c(3,3,4,4)
+))
+```
 
+```{r}
+print(bartlett.test(m1_residuals ~ CLASS, dat))
+print(bartlett.test(m1_residuals ~ TYPE, dat))
 ```
 
 **Essay Question:  What is revealed by the displays and calculations in (5)(a) and (5)(b)? Does the model 'fit'?  Does this analysis indicate that L_VOLUME, and ultimately VOLUME, might be useful for harvesting decisions? Discuss.**  
 
-***Answer: (Enter your answer here.)***
+The mean residual for all `CLASS` and `TYPE` instances seem to be centered around zero and appear to be normally distributed. Confirming this is the Bartlett test which has a high p-value, leading us to support the hypothesis that the variance of residuals is homogeneous.
+
+What this means is that for predictions of `SHUCK` we can expect the error contributed by an abalone's `VOLUME` to be normally distributed across all predictions. This is useful because we can quantify how incorrect our prediction may be by using the normal curve. If we can quantify the error we can set limits that ensure we stay above a certain level of error most of the time.
 
 -----
 
@@ -320,11 +378,11 @@ The next steps in the assignment will require consideration of the proportions o
 
 ```{r Part_6a}
 
-idxi <- mydata$TYPE == "I"
-idxa <- mydata$TYPE == "ADULT"
+idxi <- dat$TYPE == "INFANT"
+idxa <- dat$TYPE == "ADULT"
 
-max.v <- max(mydata$VOLUME)
-min.v <- min(mydata$VOLUME)
+max.v <- max(dat$VOLUME)
+min.v <- min(dat$VOLUME)
 delta <- (max.v - min.v)/10000
 prop.infants <- numeric(10000)
 prop.adults <- numeric(10000)
@@ -336,24 +394,23 @@ total.adults <- sum(idxa)
 for (k in 1:10000) { 
 	value <- min.v + k*delta
 	volume.value[k] <- value
-	prop.infants[k] <- sum(mydata$VOLUME[idxi] <= value)/total.infants
-	prop.adults[k] <-  sum(mydata$VOLUME[idxa] <= value)/total.adults
+	prop.infants[k] <- sum(dat$VOLUME[idxi] <= value)/total.infants
+	prop.adults[k] <-  sum(dat$VOLUME[idxa] <= value)/total.adults
 }
-
 ```
 
 (6)(b) Our first "rule" will be protection of all infants. We want to find a volume cutoff that protects all infants, but gives us the largest possible harvest of adults. We can achieve this by using the volume of the largest infant as our cutoff. You are given code below to identify the largest infant VOLUME and to return the proportion of adults harvested by using this cutoff. You will need to modify this latter code to return the proportion of infants harvested using this cutoff. Remember that we will harvest any individual with VOLUME greater than our cutoff.
 
 ```{r Part_6b}
 # Largest infant volume
-(max_inf_vol <- max(mydata$VOLUME[mydata$TYPE == "I"]))  # [1] 526.6383
+(max_inf_vol <- max(dat$VOLUME[dat$TYPE == "INFANT"]))  # [1] 526.6383
 
 # Proportion of adults harvested
-sum(mydata$VOLUME[mydata$TYPE == "ADULT"] > max_inf_vol) /
+sum(dat$VOLUME[dat$TYPE == "ADULT"] > max_inf_vol) /
   total.adults  # [1] 0.2476573
 
 # Add code to calculate the proportion of infants harvested
-
+sum(dat$VOLUME[dat$TYPE == "INFANT"] > max_inf_vol) / total.infants
 
 # If we use the largest infant volume, we harvest approximately 24.8% of adults and 0%,
 # as expected, of infants.
@@ -364,25 +421,29 @@ sum(mydata$VOLUME[mydata$TYPE == "ADULT"] > max_inf_vol) /
 
 ```{r Part_6c}
 # Add code to determine the median infant volume:
+median_inf_vol <- median(dat$VOLUME[dat$TYPE == "INFANT"]) 
 
 
 # Add code to calculate the proportion of infants harvested
+sum(dat$VOLUME[dat$TYPE == "INFANT"] > median_inf_vol) / total.infants
 
 
 # Add code to calculate the proportion of adults harvested
-
+sum(dat$VOLUME[dat$TYPE == "ADULT"] > median_inf_vol) / total.adults
 
 # If we use the median infant volume as our cutoff, we harvest almost 50% of our infants
 # and a little more than 93% of our adults.
 
 
 # Add code to determine the median adult volume:
-
+median_adult_vol <- median(dat$VOLUME[dat$TYPE == "ADULT"]) 
 
 # Add code to calculate the proportion of infants harvested
+sum(dat$VOLUME[dat$TYPE == "INFANT"] > median_adult_vol) / total.infants
 
 
 # Add code to calculate the proportion of adults harvested
+sum(dat$VOLUME[dat$TYPE == "ADULT"] > median_adult_vol) / total.adults
 
 
 # If we use the median adult volume as our cutoff, we harvest almost 50% of adults
@@ -393,8 +454,17 @@ sum(mydata$VOLUME[mydata$TYPE == "ADULT"] > max_inf_vol) /
 (6)(d) Next, we will create a plot showing the infant conserved proportions (i.e. "not harvested," the prop.infants vector) and the adult conserved proportions (i.e. prop.adults) as functions of volume.value. We will add vertical A-B lines and text annotations for the three (3) "rules" considered, thus far:  "protect all infants," "median infant" and "median adult." Your plot will have two (2) curves - one (1) representing infant and one (1) representing adult proportions as functions of volume.value - and three (3) A-B lines representing the cutoffs determined in (6)(b) and (6)(c).
 
 ```{r Part_6d, fig.width = 12, fig.height = 6}
-
-
+pdf = data.frame(
+  prop = c(prop.infants,  prop.adults),
+  TYPE = c(rep('INFANT', length(prop.infants)), rep('ADULT', length(prop.adults))),
+  volume.value = volume.value
+)
+ggplot(pdf) + 
+  geom_step(aes(x=volume.value, y=prop, group=TYPE, color=TYPE)) + 
+  geom_vline(aes(xintercept=median_adult_vol)) +
+  geom_text(aes(x=median_adult_vol, label="\nthe strong cars", y=0), colour="blue", angle=90) +
+  geom_vline(aes(xintercept=median_inf_vol)) + 
+  geom_hline(aes(yintercept=0.50))
 ```
 
 **Essay Question:  The two 50% "median" values serve a descriptive purpose illustrating the difference between the populations. What do these values suggest regarding possible cutoffs for harvesting?** 
